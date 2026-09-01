@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Swarm of golden butterflies with a fiery glow">
+  <defs>
+    <radialGradient id="ember" cx="50%" cy="44%" r="80%">
+      <stop offset="0%" stop-color="#932016"/>
+      <stop offset="28%" stop-color="#6e130f"/>
+      <stop offset="58%" stop-color="#450a0d"/>
+      <stop offset="100%" stop-color="#150305"/>
+    </radialGradient>
+    <radialGradient id="core" cx="50%" cy="40%" r="48%">
+      <stop offset="0%" stop-color="#f2983a" stop-opacity="0.68"/>
+      <stop offset="42%" stop-color="#c14d18" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#150305" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="wingU" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#fff3c4"/>
+      <stop offset="42%" stop-color="#ffd977"/>
+      <stop offset="76%" stop-color="#e79d34"/>
+      <stop offset="100%" stop-color="#b45a14"/>
+    </radialGradient>
+    <radialGradient id="wingL" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#ffe6a3"/>
+      <stop offset="52%" stop-color="#f5bd49"/>
+      <stop offset="100%" stop-color="#bb6a18"/>
+    </radialGradient>
+    <linearGradient id="bodyG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff3c4"/>
+      <stop offset="50%" stop-color="#f6c35a"/>
+      <stop offset="100%" stop-color="#a34f12"/>
+    </linearGradient>
+    <radialGradient id="haloG" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffb54a" stop-opacity="0.5"/>
+      <stop offset="55%" stop-color="#ff9a2b" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#ff9a2b" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Luminous butterfly unit, centered ~(50,50). Glow via layered halos, no blur filter. -->
+    <g id="butterfly">
+      <ellipse cx="50" cy="50" rx="46" ry="40" fill="url(#haloG)"/>
+      <ellipse cx="50" cy="50" rx="27" ry="22" fill="url(#haloG)"/>
+      <ellipse cx="50" cy="50" rx="16" ry="13" fill="#ffc95e" opacity="0.42"/>
+      <!-- antennae -->
+      <path d="M48 30 C46 21 42 16 37 13" fill="none" stroke="#fff0c2" stroke-width="1.2" stroke-linecap="round" opacity="0.95"/>
+      <path d="M52 30 C54 21 58 16 63 13" fill="none" stroke="#fff0c2" stroke-width="1.2" stroke-linecap="round" opacity="0.95"/>
+      <circle cx="36" cy="12" r="1.6" fill="#fff6d8"/>
+      <circle cx="64" cy="12" r="1.6" fill="#fff6d8"/>
+      <!-- wings -->
+      <path d="M50 44 C30 22 12 22 10 42 C8 60 26 66 50 50 Z" fill="url(#wingU)"/>
+      <path d="M50 44 C70 22 88 22 90 42 C92 60 74 66 50 50 Z" fill="url(#wingU)"/>
+      <path d="M50 52 C30 58 20 76 32 86 C42 92 50 74 50 60 Z" fill="url(#wingL)"/>
+      <path d="M50 52 C70 58 80 76 68 86 C58 92 50 74 50 60 Z" fill="url(#wingL)"/>
+      <!-- wing edge highlights -->
+      <path d="M50 46 C30 24 14 26 11 42" fill="none" stroke="#fff9e2" stroke-width="1.7" opacity="0.6" stroke-linecap="round"/>
+      <path d="M50 46 C70 24 86 26 89 42" fill="none" stroke="#fff9e2" stroke-width="1.7" opacity="0.6" stroke-linecap="round"/>
+      <!-- veins -->
+      <g stroke="#fff6cf" stroke-width="0.7" fill="none" opacity="0.5">
+        <path d="M50 44 C32 30 20 30 12 42"/>
+        <path d="M50 47 C36 42 24 44 13 48"/>
+        <path d="M50 44 C68 30 80 30 88 42"/>
+        <path d="M50 47 C64 42 76 44 87 48"/>
+        <path d="M50 56 C38 64 32 76 34 84"/>
+        <path d="M50 56 C62 64 68 76 66 84"/>
+      </g>
+      <!-- body -->
+      <ellipse cx="50" cy="48" rx="3.6" ry="19" fill="url(#bodyG)"/>
+      <ellipse cx="50" cy="48" rx="1.4" ry="19" fill="#fff6d8" opacity="0.75"/>
+    </g>
+
+    <g id="sparkle">
+      <path d="M0 -7 C0.7 -2.4 0.7 -2.4 4.6 0 C0.7 2.4 0.7 2.4 0 7 C-0.7 2.4 -0.7 2.4 -4.6 0 C-0.7 -2.4 -0.7 -2.4 0 -7 Z" fill="#fff0c2" opacity="0.9"/>
+      <circle cx="0" cy="0" r="3.2" fill="#ffd977" opacity="0.5"/>
+    </g>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#ember)"/>
+  <rect width="1600" height="900" fill="url(#core)"/>
+
+  <!-- motion streaks -->
+  <g stroke="#ffd977" stroke-opacity="0.12" stroke-width="1.5" fill="none">
+    <path d="M100 540 C300 516 540 556 780 524"/>
+    <path d="M280 300 C520 260 760 322 1000 280"/>
+    <path d="M960 660 C1140 616 1320 680 1520 636"/>
+    <path d="M400 470 C640 440 860 500 1100 458"/>
+    <path d="M120 220 C360 200 560 240 800 212"/>
+  </g>
+
+  <!-- depth butterflies -->
+  <g transform="translate(96,610) scale(0.7) rotate(-26)" opacity="0.72"><use href="#butterfly"/></g>
+  <g transform="translate(270,240) scale(0.8) rotate(28)" opacity="0.78"><use href="#butterfly"/></g>
+  <g transform="translate(1180,200) scale(0.95) rotate(-12)" opacity="0.85"><use href="#butterfly"/></g>
+  <g transform="translate(1470,560) scale(0.78) rotate(24)" opacity="0.78"><use href="#butterfly"/></g>
+  <g transform="translate(1300,770) scale(0.66) rotate(-36)" opacity="0.72"><use href="#butterfly"/></g>
+  <g transform="translate(140,140) scale(0.6) rotate(40)" opacity="0.66"><use href="#butterfly"/></g>
+  <g transform="translate(1500,120) scale(0.66) rotate(-20)" opacity="0.66"><use href="#butterfly"/></g>
+
+  <!-- foreground butterflies -->
+  <g transform="translate(430,470) scale(1.12) rotate(-12)"><use href="#butterfly"/></g>
+  <g transform="translate(610,320) scale(0.9) rotate(18)"><use href="#butterfly"/></g>
+  <g transform="translate(955,470) scale(1.18) rotate(9)"><use href="#butterfly"/></g>
+  <g transform="translate(760,600) scale(0.84) rotate(-24)"><use href="#butterfly"/></g>
+  <g transform="translate(1085,600) scale(0.98) rotate(27)"><use href="#butterfly"/></g>
+  <g transform="translate(200,440) scale(0.82) rotate(34)"><use href="#butterfly"/></g>
+  <g transform="translate(800,180) scale(0.86) rotate(-15)"><use href="#butterfly"/></g>
+  <g transform="translate(1240,430) scale(0.9) rotate(-8)"><use href="#butterfly"/></g>
+
+  <!-- sparkles -->
+  <g transform="translate(250,430) scale(0.9)"><use href="#sparkle"/></g>
+  <g transform="translate(540,250) scale(0.7)"><use href="#sparkle"/></g>
+  <g transform="translate(905,300) scale(1.1)"><use href="#sparkle"/></g>
+  <g transform="translate(1240,420) scale(0.85)"><use href="#sparkle"/></g>
+  <g transform="translate(1560,700) scale(0.7)"><use href="#sparkle"/></g>
+  <g transform="translate(660,690) scale(0.95)"><use href="#sparkle"/></g>
+  <g transform="translate(1180,730) scale(0.75)"><use href="#sparkle"/></g>
+  <g transform="translate(110,690) scale(0.7)"><use href="#sparkle"/></g>
+  <g transform="translate(1420,340) scale(0.9)"><use href="#sparkle"/></g>
+  <g transform="translate(360,140) scale(0.8)"><use href="#sparkle"/></g>
+
+  <!-- gold dust -->
+  <g fill="#ffd977">
+    <circle cx="200" cy="200" r="2.4" opacity="0.85"/>
+    <circle cx="360" cy="600" r="2" opacity="0.65"/>
+    <circle cx="760" cy="200" r="2.6" opacity="0.8"/>
+    <circle cx="1120" cy="300" r="1.8" opacity="0.6"/>
+    <circle cx="1380" cy="620" r="2.4" opacity="0.75"/>
+    <circle cx="900" cy="760" r="2" opacity="0.65"/>
+    <circle cx="520" cy="420" r="1.7" opacity="0.55"/>
+    <circle cx="1300" cy="130" r="2.2" opacity="0.7"/>
+    <circle cx="80" cy="480" r="2.6" opacity="0.6"/>
+    <circle cx="1520" cy="240" r="1.9" opacity="0.65"/>
+    <circle cx="620" cy="480" r="1.6" opacity="0.5"/>
+    <circle cx="980" cy="600" r="1.9" opacity="0.6"/>
+  </g>
+
+  <!-- vignette -->
+  <radialGradient id="vig" cx="50%" cy="50%" r="74%">
+    <stop offset="62%" stop-color="#0c0203" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#0c0203" stop-opacity="0.5"/>
+  </radialGradient>
+  <rect width="1600" height="900" fill="url(#vig)"/>
+</svg>

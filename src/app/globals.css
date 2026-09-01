@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+/* ── Font faces (Next.js font via CSS variables in layout.tsx) ─────── */
+@theme inline {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-display-fallback), serif;
+}
+
+/* ── "Crimson & Gold" — dark-first, luxury wine + antique gold ────── */
+:root {
+  color-scheme: dark;
+  --font-display-fallback: "Playfair Display", Georgia, serif;
+}
+
+/* ── Semantic tokens — DARK (default) ─────────────────────────────── */
+:root,
+html.dark {
+  --surface-1: #12060a;
+  --surface-2: #1a0a0f;
+  --surface-3: #241017;
+  --surface-4: #2f151d;
+  --surface-overlay: rgba(10, 3, 5, 0.72);
+
+  --text-primary: #fff8ed;
+  --text-secondary: #dcc8b4;
+  --text-tertiary: #a98e7c;
+  --text-disabled: #6e5749;
+  --text-inverse: #14060a;
+
+  --border-subtle: #2b141b;
+  --border-default: #3a1d26;
+  --border-strong: #4e2933;
+  --border-focus: #e7c873;
+  --divider: #241017;
+
+  --accent: #d9b45b;
+  --accent-hover: #ebc97e;
+  --accent-pressed: #c49a42;
+  --accent-subtle: rgba(217, 180, 91, 0.14);
+  --accent-soft: rgba(217, 180, 91, 0.2);
+  --on-accent: #1a0a0f;
+
+  --gold: #e7c873;
+  --gold-bright: #fff0c9;
+  --ruby: #a9313b;
+  --ruby-deep: #6e1a22;
+  --rose: #d98a6a;
+
+  --success: #8fbf6e;
+  --success-strong: #a6d489;
+  --warning: #e0a94a;
+  --warning-strong: #efc06f;
+  --info: #7fb0e8;
+  --info-strong: #9cc4f0;
+  --danger: #e57373;
+  --danger-strong: #f08a8a;
+
+  --radius-xs: 4px;
+  --radius-sm: 7px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(8, 2, 4, 0.2);
+  --shadow-sm: 0 1px 3px rgba(8, 2, 4, 0.28), 0 1px 2px rgba(8, 2, 4, 0.18);
+  --shadow-md: 0 6px 18px rgba(8, 2, 4, 0.38), 0 2px 5px rgba(8, 2, 4, 0.22);
+  --shadow-lg: 0 18px 48px rgba(8, 2, 4, 0.5), 0 6px 14px rgba(8, 2, 4, 0.28);
+  --shadow-glow: 0 0 0 1px rgba(217, 180, 91, 0.3), 0 0 28px rgba(217, 180, 91, 0.22);
+
+  --dur-1: 100ms;
+  --dur-2: 150ms;
+  --dur-3: 200ms;
+  --dur-4: 300ms;
+  --dur-5: 500ms;
+
+  --z-base: 0;
+  --z-raised: 10;
+  --z-dropdown: 30;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+  --z-tooltip: 70;
+}
+
+/* ── Tailwind v4 color mapping ────────────────────────────────────── */
+@theme inline {
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
+  --color-surface-overlay: var(--surface-overlay);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-inverse: var(--text-inverse);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border-focus: var(--border-focus);
+  --color-divider: var(--divider);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+
+  --color-gold: var(--gold);
+  --color-gold-bright: var(--gold-bright);
+  --color-ruby: var(--ruby);
+  --color-ruby-deep: var(--ruby-deep);
+  --color-rose: var(--rose);
+
+  --color-success: var(--success);
+  --color-success-strong: var(--success-strong);
+  --color-warning: var(--warning);
+  --color-warning-strong: var(--warning-strong);
+  --color-info: var(--info);
+  --color-info-strong: var(--info-strong);
+  --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-strong);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+}
+
+/* ── Base styles ──────────────────────────────────────────────────── */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background: var(--surface-1);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  * {
+    border-color: var(--border-subtle);
+  }
+
+  ::selection {
+    background: var(--accent-subtle);
+    color: var(--text-primary);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* ── Animations ───────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes glow-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 0.8s linear infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-glow-breathe {
+  animation: glow-breathe 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
