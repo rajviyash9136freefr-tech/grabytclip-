@@ -16,39 +16,64 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://grabytclip.com";
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION;
+
 export const metadata: Metadata = {
   title: {
-    default: "grabytclip — Download YouTube Videos & Audio",
-    template: "%s — grabytclip",
+    default: "Free YouTube Video Downloader — 4K Video & MP3 Audio",
+    template: "%s | grabytclip",
   },
   description:
-    "Download YouTube videos in 4K, 2K, 1080p, extract audio as MP3 or M4A, grab thumbnails, copy descriptions and hashtags — fast, free, no account needed.",
+    "Free YouTube video downloader: save videos in 4K, 2K, 1080p, 720p, 480p or 360p, convert to MP3/M4A audio, download thumbnails, and copy descriptions & hashtags. No account needed.",
   keywords: [
     "YouTube downloader",
-    "video downloader",
-    "4K video download",
+    "YouTube video downloader",
+    "YouTube to MP4",
     "YouTube to MP3",
-    "thumbnail downloader",
+    "free video downloader",
+    "4K video download",
+    "YouTube Shorts downloader",
+    "YouTube thumbnail downloader",
+    "MP3 converter",
     "free YouTube tool",
   ],
   robots: { index: true, follow: true },
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://grabytclip.com",
-  ),
+  metadataBase: new URL(appUrl),
+  alternates: {
+    canonical: "/",
+  },
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: { url: "/favicon.ico" },
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+  },
+  appleWebApp: {
+    title: "grabytclip",
+    capable: true,
+    statusBarStyle: "black-translucent",
+  },
+  verification: googleSiteVerification
+    ? { google: googleSiteVerification }
+    : undefined,
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: process.env.NEXT_PUBLIC_APP_URL ?? "https://grabytclip.com",
+    url: appUrl,
     siteName: "grabytclip",
-    title: "grabytclip — Download YouTube Videos & Audio",
+    title: "Free YouTube Video Downloader — 4K Video & MP3 Audio",
     description:
-      "Download YouTube videos in 4K, 2K, 1080p, extract audio as MP3 or M4A, grab thumbnails, copy descriptions and hashtags.",
+      "Download YouTube videos in 4K, 2K, 1080p, convert to MP3/M4A, grab thumbnails, and copy descriptions & hashtags — fast, free, no account.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "grabytclip — Download YouTube Videos & Audio",
+    title: "Free YouTube Video Downloader — 4K Video & MP3 Audio",
     description:
-      "Download YouTube videos in 4K, 2K, 1080p, extract audio as MP3 or M4A, grab thumbnails, copy descriptions and hashtags.",
+      "Download YouTube videos in 4K, 2K, 1080p, convert to MP3/M4A, grab thumbnails, and copy descriptions & hashtags — fast, free, no account.",
   },
 };
 

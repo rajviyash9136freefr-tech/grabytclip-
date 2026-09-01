@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// edge runtime is not supported by the Cloudflare Workers adapter (OpenNext).
+// ImageResponse also works in the default (nodejs) runtime on Next.js 15.
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

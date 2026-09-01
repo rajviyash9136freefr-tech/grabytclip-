@@ -1,16 +1,61 @@
 import { NextRequest } from "next/server";
-import { fail, toErrorResponse } from "@/lib/errors";
-import { downloadQuerySchema } from "@/lib/validate";
-import {
-  buildVideoDownloadArgs,
-  buildAudioDownloadArgs,
-  downloadToTempFile,
-  fileResponse,
-} from "@/lib/youtube";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { fail, ok, toErrorResponse } from "@backend/lib/errors";
+import { downloadQuerySchema, createDownloadSchema } from "@backend/lib/validate";
+import { resolveServerlessDownload } from "@backend/lib/serverless-youtube";
+import { createJob, toJobView } from "@backend/lib/download-jobs";
+import { checkRateLimit, getClientIp } from "@backend/lib/rate-limit";
 
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+/** Create a download job and return its id immediately; progress is polled separately. */
+export async function POST(request: NextRequest) {
+  try {
+    const ip = getClientIp(request);
+    const rl = await checkRateLimit(`create:${ip}`, 30, 60_000);
+    if (!rl.allowed) {
+      return fail("RATE_LIMITED", "Too many download requests. Try again soon.", 429, {
+        retryAfterSec: rl.retryAfterSec,
+      });
+    }
+
+    let raw: unknown;
+    try {
+      raw = await request.json();
+    } catch {
+      return fail("VALIDATION_ERROR", "Invalid JSON body", 400);
+    }
+
+    const parsed = createDownloadSchema.safeParse(raw);
+    if (!parsed.success) {
+      return fail(
+        "VALIDATION_ERROR",
+        parsed.error.issues[0]?.message ?? "Invalid download parameters",
+        400,
+      );
+    }
+
+    const { videoId, type, quality, format, expectedBytes, durationSec } = parsed.data;
+    const abortController = new AbortController();
+    request.signal.addEventListener("abort", () => abortController.abort(), {
+      once: true,
+    });
+
+    const job = createJob({
+      videoId,
+      type,
+      quality,
+      format,
+      ip,
+      expectedBytes,
+      durationSec,
+      signal: abortController.signal,
+    });
+
+    return ok({ jobId: job.id, job: toJobView(job) });
+  } catch (e) {
+    return toErrorResponse(e);
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,9 +75,8 @@ export async function GET(request: NextRequest) {
 
     const { videoId, type, quality, format } = parsed.data;
 
-    // Rate limit (per IP, stricter for downloads)
     const ip = getClientIp(request);
-    const rl = await checkRateLimit(`download:${ip}`, 15, 60_000);
+    const rl = await checkRateLimit(`download:${ip}`, 30, 60_000);
     if (!rl.allowed) {
       return fail("RATE_LIMITED", "Too many downloads. Try again soon.", 429, {
         retryAfterSec: rl.retryAfterSec,
@@ -44,17 +88,16 @@ export async function GET(request: NextRequest) {
       once: true,
     });
 
-    // Acquire a concurrency slot + download to disk. Any yt-dlp failure surfaces
-    // as a proper error status BEFORE we begin streaming — no 200-with-empty-file.
-    const spec =
-      type === "audio"
-        ? buildAudioDownloadArgs(videoId, format ?? "m4a")
-        : buildVideoDownloadArgs(videoId, quality ?? "1080");
+    const result = await resolveServerlessDownload({
+      videoId,
+      type,
+      quality,
+      format,
+      signal: abortController.signal,
+    });
 
-    const file = await downloadToTempFile(spec, { signal: abortController.signal });
-
-    // Stream the on-disk file to the client; temp file is cleaned up on completion.
-    return fileResponse(file);
+    // 302 Redirect directly to the CDN stream URL
+    return Response.redirect(result.streamUrl, 302);
   } catch (e) {
     return toErrorResponse(e);
   }

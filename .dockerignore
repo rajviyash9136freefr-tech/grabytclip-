@@ -1,0 +1,16 @@
+node_modules
+.next
+.open-next
+.git
+.agents
+.claude
+.cursor
+.vscode
+.wrangler
+deploy
+others
+*.log
+*.tsbuildinfo
+.dev.vars
+.env.local
+.env.production

@@ -46,6 +46,8 @@ NEXT_PUBLIC_APP_URL=https://grabytclip.com
 YTDLP_PATH=              # leave blank to use yt-dlp from PATH
 DOWNLOAD_TIMEOUT=600
 MAX_DOWNLOAD_SIZE=1073741824
+DOWNLOAD_FRAGMENTS=4     # concurrent DASH fragment downloads (1–16)
+DOWNLOAD_JOB_TTL_MS=1800000
 RATE_LIMIT_REQUESTS=60
 RATE_LIMIT_WINDOW_MS=60000
 ```
@@ -142,6 +144,9 @@ yt-dlp breaks when YouTube changes. Set a nightly cron to update it:
 ## Notes
 
 - **Set a hard spend/bw cap** on your host or a proxy to bound egress if that matters to you.
-- **Rate limiting** in-app is per-IP (in-memory); for a multi-instance deployment, swap the
-  in-memory store for Redis.
+- **Download jobs + rate limiting** are in-memory (a `Map` of job state and per-IP sliding
+  windows). This is fine for a single instance — the frontend polls the job endpoint and the
+  temp file is streamed from the same process. For a multi-instance deployment, move job state
+  to a shared store (Redis) so a poll can land on a different instance than the downloader.
+- Finished jobs and their temp files are cleaned after `DOWNLOAD_JOB_TTL_MS` (default 30 min).
 - Keep `pnpm-lock.yaml` committed; install with `--frozen-lockfile` in CI.

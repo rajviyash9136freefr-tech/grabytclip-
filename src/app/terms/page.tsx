@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "@/components/page-shell";
+import { PageShell } from "@frontend/components/page-shell";
 
 export const metadata: Metadata = {
   title: "Terms of Service",

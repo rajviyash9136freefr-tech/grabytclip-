@@ -17,6 +17,7 @@ const eslintConfig = [
       "node_modules/**",
       "public/**",
       "docs/**",
+      ".claude/**",
       "next-env.d.ts",
       "*.config.*",
       "**/*.json",

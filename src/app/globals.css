@@ -166,6 +166,38 @@ html.dark {
   }
 }
 
+/* ── Custom scrollbars (theme-matched) ─────────────────────────────── */
+/* A slim, visible gold grab handle over a dark recessed track. Apply the
+   `custom-scrollbar` class to any overflow-y-auto container. */
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--accent) var(--surface-4);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--surface-4);
+  border-radius: var(--radius-full);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--surface-4); /* creates a small inset gap */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* ── Animations ───────────────────────────────────────────────────── */
 @keyframes pulse {
   0%,
@@ -266,4 +298,24 @@ html.dark {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* ── FAQ accordion (native <details>, no JS) ──────────────────────────── */
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+}
+
+.faq-content > * {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.faq-item[open] > .faq-content {
+  grid-template-rows: 1fr;
 }

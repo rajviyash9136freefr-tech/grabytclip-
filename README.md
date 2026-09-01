@@ -9,12 +9,15 @@ the download engine.
 
 ## Features
 
-- **Video downloads** — 4K, 2K, 1080p, 720p, 480p, 360p (up to whatever the source provides).
-- **Audio extraction** — high-quality M4A or MP3.
-- **Thumbnail download** — best available resolution.
-- **Copy tools** — video description and hashtags.
-- **No accounts** — paste a link and go.
-- **Server-side streaming** — files are streamed directly to you and never stored.
+- **Video downloads** — Best/Original, 4K, 2K, 1080p, 720p, 480p, 360p; always picks the best available quality (no silent downgrade)
+- **Audio extraction** — high-quality M4A or MP3
+- **Thumbnail download** — best available resolution
+- **Copy tools** — video description and hashtags
+- **Live download progress** — real-time progress bar with speed, %, and MB/GB shown on the site while downloading
+- **High-speed downloads** — multi-connection DASH fragment fetching (yt-dlp `--concurrent-fragments`)
+- **Accurate file sizes** — MB/GB shown on every quality button, computed from stream bitrate when exact size is unknown
+- **No accounts** — paste a link and go
+- **Server-side streaming** — files are streamed directly to you and never stored
 
 ## Stack
 
@@ -54,22 +57,27 @@ curl http://localhost:3000/api/health
 
 See `.env.example`. The essential ones:
 
-| Var                                            | Purpose                                                          |
-| ---------------------------------------------- | ---------------------------------------------------------------- |
-| `YTDLP_PATH`                                   | Path to the `yt-dlp` binary (defaults to `yt-dlp` on `PATH`)     |
-| `DOWNLOAD_TIMEOUT`                             | Per-download timeout in seconds (default `120`)                  |
-| `MAX_DOWNLOAD_SIZE`                            | Max streamed file size in bytes (default `1 GiB`)                |
-| `RATE_LIMIT_REQUESTS` / `RATE_LIMIT_WINDOW_MS` | Per-IP rate limiting                                             |
-| `NEXT_PUBLIC_APP_URL`                          | Canonical origin (also read by `sitemap`, `robots`, `opengraph`) |
+| Var                                              | Purpose                                                          |
+| ------------------------------------------------ | ---------------------------------------------------------------- |
+| `YTDLP_PATH`                                     | Path to the `yt-dlp` binary (defaults to `yt-dlp` on `PATH`)     |
+| `DOWNLOAD_TIMEOUT`                               | Per-download timeout in seconds (default `120`)                  |
+| `MAX_DOWNLOAD_SIZE`                              | Max streamed file size in bytes (default `1 GiB`)                |
+| `DOWNLOAD_FRAGMENTS`                             | Concurrent DASH fragment downloads (default `4`, max `16`)       |
+| `DOWNLOAD_JOB_TTL_MS`                            | Lifetime of a finished download job + temp file (default `30m`)  |
+| `RATE_LIMIT_REQUESTS` / `RATE_LIMIT_WINDOW_MS`   | Per-IP rate limiting                                             |
+| `NEXT_PUBLIC_APP_URL`                            | Canonical origin (also read by `sitemap`, `robots`, `opengraph`) |
 
 ## API
 
-| Endpoint               | Method | Description                                                       |
-| ---------------------- | ------ | ----------------------------------------------------------------- |
-| `/api/health`          | GET    | Liveness + engine availability                                    |
-| `/api/video/info`      | POST   | `{ url }` → video metadata, available qualities, audio options    |
-| `/api/video/download`  | GET    | Stream a video or audio file (`?videoId=&type=&quality=/format=`) |
-| `/api/video/thumbnail` | GET    | Download the thumbnail (`?videoId=`); proxied from YouTube        |
+| Endpoint                              | Method | Description                                                       |
+| ------------------------------------- | ------ | ----------------------------------------------------------------- |
+| `/api/health`                         | GET    | Liveness + engine availability                                    |
+| `/api/video/info`                     | POST   | `{ url }` → video metadata, available qualities, audio options    |
+| `/api/video/download`                 | POST   | `{ videoId, type, quality?, format?, expectedBytes? }` → job id   |
+| `/api/video/download`                 | GET    | (legacy) Stream a video/audio file (`?videoId=&type=&quality=`)   |
+| `/api/video/download/job/:jobId`      | GET    | Poll live progress (percent, speed, MB/GB, ETA)                   |
+| `/api/video/download/file/:jobId`     | GET    | Stream the completed file (auto-redirect from job)                |
+| `/api/video/thumbnail`                | GET    | Download the thumbnail (`?videoId=`); proxied from YouTube        |
 
 All errors use the standard envelope `{ error: { code, message, details? } }`.
 

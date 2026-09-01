@@ -1,10 +1,9 @@
 import { NextRequest } from "next/server";
-import { ok, toErrorResponse } from "@/lib/errors";
-import { videoUrlSchema } from "@/lib/validate";
-import { fetchMetadata } from "@/lib/youtube";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { ok, toErrorResponse } from "@backend/lib/errors";
+import { videoUrlSchema } from "@backend/lib/validate";
+import { fetchMetadata } from "@backend/lib/serverless-youtube";
+import { checkRateLimit, getClientIp } from "@backend/lib/rate-limit";
 
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
@@ -54,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     const { url, videoId } = parsed.data;
 
-    // Fetch metadata from yt-dlp
+    // Fetch metadata via serverless edge extractor
     const metadata = await fetchMetadata(url);
 
     return ok({ videoId, ...metadata });
