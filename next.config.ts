@@ -39,6 +39,11 @@ const cspString = Object.entries(CSP)
 
 const nextConfig: NextConfig = {
   serverExternalPackages: [],
+  webpack: (config) => {
+    config.output = config.output || {};
+    config.output.hashFunction = "xxhash64";
+    return config;
+  },
   async headers() {
     return [
       {
