@@ -19,15 +19,21 @@ export function ToolPage({ tool }: { tool: ToolPageConfig }) {
 
   return (
     <>
-      <JsonLd id="ld-breadcrumb" data={breadcrumbSchema([
-        { name: "Home", url: baseUrl },
-        { name: tool.h1, url },
-      ])} />
-      <JsonLd id="ld-webapp" data={webAppSchema({
-        name: tool.h1,
-        description: tool.description,
-        url,
-      })} />
+      <JsonLd
+        id="ld-breadcrumb"
+        data={breadcrumbSchema([
+          { name: "Home", url: baseUrl },
+          { name: tool.h1, url },
+        ])}
+      />
+      <JsonLd
+        id="ld-webapp"
+        data={webAppSchema({
+          name: tool.h1,
+          description: tool.description,
+          url,
+        })}
+      />
       <JsonLd id="ld-faq" data={faqSchema(tool.faq)} />
 
       <SiteHeader />
@@ -61,7 +67,10 @@ export function ToolPage({ tool }: { tool: ToolPageConfig }) {
 
             <div className="mx-auto mt-5 max-w-[620px] space-y-4">
               {tool.intro.map((p, i) => (
-                <p key={i} className="text-[15px] leading-relaxed text-[var(--text-secondary)]">
+                <p
+                  key={i}
+                  className="text-[15px] leading-relaxed text-[var(--text-secondary)]"
+                >
                   {p}
                 </p>
               ))}

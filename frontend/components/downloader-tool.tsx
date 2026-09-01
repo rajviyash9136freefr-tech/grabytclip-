@@ -30,8 +30,7 @@ export function DownloaderTool() {
         body: JSON.stringify({ url }),
       });
       const json = (await res.json()) as
-        | { data: VideoMetadata }
-        | { error: { message: string } };
+        { data: VideoMetadata } | { error: { message: string } };
       if (!res.ok || !("data" in json)) {
         const msg = "error" in json ? json.error.message : "Something went wrong";
         setError(msg);

@@ -30,7 +30,8 @@ export function formatFileSize(bytes: number): string {
 export function formatSpeed(bytesPerSec: number): string {
   if (bytesPerSec < 1024) return `${bytesPerSec} B/s`;
   if (bytesPerSec < 1024 * 1024) return `${(bytesPerSec / 1024).toFixed(0)} KB/s`;
-  if (bytesPerSec < 1024 * 1024 * 1024) return `${(bytesPerSec / (1024 * 1024)).toFixed(1)} MB/s`;
+  if (bytesPerSec < 1024 * 1024 * 1024)
+    return `${(bytesPerSec / (1024 * 1024)).toFixed(1)} MB/s`;
   return `${(bytesPerSec / (1024 * 1024 * 1024)).toFixed(2)} GB/s`;
 }
 

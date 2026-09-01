@@ -27,7 +27,7 @@ export async function GET(
     return fail(
       "PROVIDER_ERROR",
       job.status === "error"
-        ? job.errorMessage ?? "The download failed."
+        ? (job.errorMessage ?? "The download failed.")
         : "The download is still in progress.",
       job.status === "error" ? 422 : 409,
     );

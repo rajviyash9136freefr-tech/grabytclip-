@@ -57,9 +57,7 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
   },
-  verification: googleSiteVerification
-    ? { google: googleSiteVerification }
-    : undefined,
+  verification: googleSiteVerification ? { google: googleSiteVerification } : undefined,
   openGraph: {
     type: "website",
     locale: "en_US",

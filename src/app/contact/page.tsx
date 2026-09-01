@@ -18,8 +18,8 @@ export default function ContactPage() {
 
       <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">By email</h2>
       <p>
-        The fastest way to reach us is by email. For support issues, please include the video
-        URL and a short description of the problem so we can help sooner.
+        The fastest way to reach us is by email. For support issues, please include the
+        video URL and a short description of the problem so we can help sooner.
       </p>
       <ul>
         <li>
@@ -59,18 +59,20 @@ export default function ContactPage() {
         <Link href="/#faq" className="text-[var(--accent)] hover:underline">
           FAQ page
         </Link>
-        . If a download fails, it&apos;s often because the video is private, age-restricted, or
-        unavailable in your region — see the{" "}
+        . If a download fails, it&apos;s often because the video is private,
+        age-restricted, or unavailable in your region — see the{" "}
         <Link href="/disclaimer" className="text-[var(--accent)] hover:underline">
           disclaimer
         </Link>{" "}
         for details on permitted use.
       </p>
 
-      <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">Response time</h2>
+      <h2 className="text-[16px] font-semibold text-[var(--text-primary)]">
+        Response time
+      </h2>
       <p>
-        We aim to respond to all messages within 24 hours on weekdays. During busier periods,
-        support requests are handled in the order they arrive.
+        We aim to respond to all messages within 24 hours on weekdays. During busier
+        periods, support requests are handled in the order they arrive.
       </p>
     </PageShell>
   );

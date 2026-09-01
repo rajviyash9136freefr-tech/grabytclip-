@@ -84,7 +84,7 @@ describe("parseProgressLine", () => {
 
   it("returns null for non-progress lines", () => {
     expect(parseProgressLine("ERROR: something happened")).toBeNull();
-    expect(parseProgressLine("[Merger] Merging formats into \"file.mp4\"")).toBeNull();
+    expect(parseProgressLine('[Merger] Merging formats into "file.mp4"')).toBeNull();
     expect(parseProgressLine("[youtube] Downloading webpage")).toBeNull();
   });
 
@@ -151,7 +151,9 @@ describe("codecsArePlayable", () => {
   it("rejects VP9/AV1 video or Opus audio (not Windows-Media-Player friendly)", () => {
     expect(codecsArePlayable({ videoCodec: "av1", audioCodec: "opus" })).toBe(false);
     expect(codecsArePlayable({ videoCodec: "vp9", audioCodec: "opus" })).toBe(false);
-    expect(codecsArePlayable({ videoCodec: "vp09.00.41.08", audioCodec: "aac" })).toBe(false);
+    expect(codecsArePlayable({ videoCodec: "vp09.00.41.08", audioCodec: "aac" })).toBe(
+      false,
+    );
     expect(codecsArePlayable({ videoCodec: "h264", audioCodec: "opus" })).toBe(false);
   });
 

@@ -6,7 +6,14 @@ import { CopyButton } from "@frontend/components/copy-button";
 import { Badge } from "@frontend/components/ui/badge";
 import { Spinner } from "@frontend/components/ui/spinner";
 import { DownloadConfirmDialog } from "@frontend/components/download-confirm-dialog";
-import { formatDuration, formatNumber, hashtagify, formatFileSize, formatSpeed, formatEta } from "@frontend/lib/format";
+import {
+  formatDuration,
+  formatNumber,
+  hashtagify,
+  formatFileSize,
+  formatSpeed,
+  formatEta,
+} from "@frontend/lib/format";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -100,8 +107,7 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
           }),
         });
         const json = (await res.json()) as
-          | { data: { jobId: string } }
-          | { error: { message: string } };
+          { data: { jobId: string } } | { error: { message: string } };
 
         if (!res.ok || !("data" in json)) {
           const msg = "error" in json ? json.error.message : "Job creation failed";
@@ -271,7 +277,11 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
             loading="lazy"
             onLoad={(e) => {
               const img = e.target as HTMLImageElement;
-              if (img.naturalWidth <= 120 && img.naturalHeight <= 90 && !img.dataset.fallback) {
+              if (
+                img.naturalWidth <= 120 &&
+                img.naturalHeight <= 90 &&
+                !img.dataset.fallback
+              ) {
                 img.dataset.fallback = "1";
                 img.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
               }
@@ -349,7 +359,9 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
                       type: "video",
                       quality: q.key,
                       label: q.label,
-                      sizeLabel: q.filesizeApprox ? `~${formatFileSize(q.filesizeApprox)}` : "—",
+                      sizeLabel: q.filesizeApprox
+                        ? `~${formatFileSize(q.filesizeApprox)}`
+                        : "—",
                       willConvert: isHighRes(q.key),
                     });
                   }
@@ -374,10 +386,7 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
         {/* Error states for video jobs */}
         {Object.entries(jobs).map(([key, job]) =>
           job.status === "error" && key.startsWith("video-") ? (
-            <p
-              key={key}
-              className="mt-1 text-[11px] text-[var(--danger)]"
-            >
+            <p key={key} className="mt-1 text-[11px] text-[var(--danger)]">
               {key.replace("video-", "")}: {job.error}
             </p>
           ) : null,
@@ -414,7 +423,9 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
                     type: "audio",
                     format: a.key,
                     label: a.label,
-                    sizeLabel: a.filesizeApprox ? `~${formatFileSize(a.filesizeApprox)}` : "—",
+                    sizeLabel: a.filesizeApprox
+                      ? `~${formatFileSize(a.filesizeApprox)}`
+                      : "—",
                     willConvert: false,
                   });
                 }}
@@ -433,10 +444,7 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
         {/* Error states for audio jobs */}
         {Object.entries(jobs).map(([key, job]) =>
           job.status === "error" && key.startsWith("audio-") ? (
-            <p
-              key={key}
-              className="mt-1 text-[11px] text-[var(--danger)]"
-            >
+            <p key={key} className="mt-1 text-[11px] text-[var(--danger)]">
               {key.replace("audio-", "")}: {job.error}
             </p>
           ) : null,
@@ -511,7 +519,7 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
         title={title}
         details={
           pending
-            ? [
+            ? ([
                 ["Type", pending.type === "video" ? "Video" : "Audio"],
                 ...(pending.type === "video" && pending.quality !== "best"
                   ? [["Quality", pending.label] as [string, string]]
@@ -519,8 +527,13 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
                 ...(pending.quality === "best"
                   ? [["Quality", "Best available"] as [string, string]]
                   : []),
-                ["Format", pending.type === "video" ? "MP4" : pending.format?.toUpperCase() ?? ""],
-              ].filter((row) => row[1]) as Array<[string, string]>
+                [
+                  "Format",
+                  pending.type === "video"
+                    ? "MP4"
+                    : (pending.format?.toUpperCase() ?? ""),
+                ],
+              ].filter((row) => row[1]) as Array<[string, string]>)
             : []
         }
         sizeLabel={pending?.sizeLabel ?? "—"}
@@ -558,8 +571,15 @@ function DownloadProgressCard({
   optionKey: string;
   onCancel: (optionKey: string) => void;
 }) {
-  const barPercent = Math.min(100, Math.max(job.status === "ready" ? 100 : 5, job.percent));
-  const safeTotal = Math.max(job.totalBytes || 0, job.downloadedBytes || 0, job.expectedBytes || 0);
+  const barPercent = Math.min(
+    100,
+    Math.max(job.status === "ready" ? 100 : 5, job.percent),
+  );
+  const safeTotal = Math.max(
+    job.totalBytes || 0,
+    job.downloadedBytes || 0,
+    job.expectedBytes || 0,
+  );
   const downloadedFormatted = formatFileSize(job.downloadedBytes || 0);
 
   const statusLabel =
@@ -619,8 +639,18 @@ function DownloadProgressCard({
           className="group -mr-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--danger)]/20 hover:text-[var(--danger)]"
           aria-label="Cancel download"
         >
-          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="h-3.5 w-3.5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       )}

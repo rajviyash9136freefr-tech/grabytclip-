@@ -72,7 +72,12 @@ export interface VideoMetadata {
   isLive: boolean;
 }
 
-const QUALITY_TIERS: Array<{ key: string; label: string; height: number; bitrateMultiplier: number }> = [
+const QUALITY_TIERS: Array<{
+  key: string;
+  label: string;
+  height: number;
+  bitrateMultiplier: number;
+}> = [
   { key: "best", label: "Best", height: Infinity, bitrateMultiplier: 5500 },
   { key: "2160", label: "4K", height: 2160, bitrateMultiplier: 12000 },
   { key: "1440", label: "2K", height: 1440, bitrateMultiplier: 7000 },
@@ -134,7 +139,10 @@ interface YouTubeVideoDetails {
   keywords?: string[];
 }
 
-async function fetchYouTubePageData(videoId: string, signal?: AbortSignal): Promise<VideoMetadata | null> {
+async function fetchYouTubePageData(
+  videoId: string,
+  signal?: AbortSignal,
+): Promise<VideoMetadata | null> {
   const res = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
     headers: {
       "User-Agent":
@@ -151,7 +159,10 @@ async function fetchYouTubePageData(videoId: string, signal?: AbortSignal): Prom
   const match = html.match(/ytInitialPlayerResponse\s*=\s*({.+?});(?:var\s|window\[|<)/s);
   if (!match || !match[1]) return null;
 
-  let playerResponse: { videoDetails?: YouTubeVideoDetails; microformat?: { playerMicroformatRenderer?: { uploadDate?: string } } };
+  let playerResponse: {
+    videoDetails?: YouTubeVideoDetails;
+    microformat?: { playerMicroformatRenderer?: { uploadDate?: string } };
+  };
   try {
     playerResponse = JSON.parse(match[1]);
   } catch {
@@ -164,15 +175,18 @@ async function fetchYouTubePageData(videoId: string, signal?: AbortSignal): Prom
   const durationSec = parseInt(details.lengthSeconds || "0", 10) || 0;
   const viewCount = parseInt(details.viewCount || "0", 10) || 0;
   const isLive = Boolean(details.isLiveContent);
-  const uploadDate = playerResponse.microformat?.playerMicroformatRenderer?.uploadDate?.slice(0, 10) || "Unknown";
+  const uploadDate =
+    playerResponse.microformat?.playerMicroformatRenderer?.uploadDate?.slice(0, 10) ||
+    "Unknown";
 
   const thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-  const bestAudioSize = durationSec > 0 ? Math.round((128 * 1000 / 8) * durationSec) : undefined;
+  const bestAudioSize =
+    durationSec > 0 ? Math.round(((128 * 1000) / 8) * durationSec) : undefined;
 
   const qualityOptions: QualityOption[] = QUALITY_TIERS.map((tier) => {
     const estimatedSize =
       durationSec > 0
-        ? Math.round((tier.bitrateMultiplier * 1000 / 8) * durationSec)
+        ? Math.round(((tier.bitrateMultiplier * 1000) / 8) * durationSec)
         : undefined;
 
     return {
@@ -223,7 +237,10 @@ async function fetchYouTubePageData(videoId: string, signal?: AbortSignal): Prom
   };
 }
 
-async function fetchYouTubeOembed(videoId: string, signal?: AbortSignal): Promise<VideoMetadata | null> {
+async function fetchYouTubeOembed(
+  videoId: string,
+  signal?: AbortSignal,
+): Promise<VideoMetadata | null> {
   const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
   const res = await fetch(oembedUrl, { signal });
   if (!res.ok) return null;
@@ -286,7 +303,8 @@ function generateFallbackMetadata(
     viewCount: 0,
     likeCount: null,
     uploadDate: "Unknown",
-    thumbnail: overrides?.thumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+    thumbnail:
+      overrides?.thumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
     formats: [],
     qualityOptions,
     audioOptions,
@@ -379,7 +397,9 @@ export async function resolveServerlessDownload(opts: {
 
       if (streamUrl) {
         const ext = type === "audio" ? (format === "mp3" ? "mp3" : "m4a") : "mp4";
-        const filename = data.filename || `grabytclip-${videoId}-${type === "video" ? quality + "p" : format}.${ext}`;
+        const filename =
+          data.filename ||
+          `grabytclip-${videoId}-${type === "video" ? quality + "p" : format}.${ext}`;
         const contentType =
           type === "audio"
             ? format === "mp3"

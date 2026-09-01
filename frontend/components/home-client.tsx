@@ -64,10 +64,7 @@ export function HomeClient({ children }: { children?: ReactNode }) {
 
         {/* ── How it works ──────────────────────────── */}
         <section id="how-it-works" className="mx-auto w-full max-w-[900px] px-4 pb-24">
-          <SectionHeading
-            label="Effortless in four steps"
-            heading="How it works"
-          />
+          <SectionHeading label="Effortless in four steps" heading="How it works" />
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[

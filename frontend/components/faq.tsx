@@ -11,7 +11,11 @@ interface FaqProps {
  * SEO-friendly FAQ accordion built on native <details>/<summary> — no client JS,
  * fully crawlable, and the questions/answers stay in the initial HTML payload.
  */
-export function Faq({ items, label = "Got questions?", heading = "Frequently asked questions" }: FaqProps) {
+export function Faq({
+  items,
+  label = "Got questions?",
+  heading = "Frequently asked questions",
+}: FaqProps) {
   return (
     <section id="faq" className="mx-auto w-full max-w-[760px] px-4 pb-24">
       <SectionHeading label={label} heading={heading} />

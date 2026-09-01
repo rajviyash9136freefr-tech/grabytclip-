@@ -36,12 +36,36 @@ export const metadata: Metadata = {
 // ── Formats / features grid ──────────────────────────────────────────────
 
 const FORMATS = [
-  { icon: <Video className="h-5 w-5" />, title: "Full videos", desc: "4K, 2K, 1080p, 720p, 480p, 360p — whatever the source provides." },
-  { icon: <Music className="h-5 w-5" />, title: "Audio MP3", desc: "Extract the audio track as a compatible MP3 file." },
-  { icon: <Mic className="h-5 w-5" />, title: "Audio M4A", desc: "Highest-quality AAC audio in an M4A container." },
-  { icon: <Film className="h-5 w-5" />, title: "YouTube Shorts", desc: "Download Shorts as MP4 or extract just the audio." },
-  { icon: <ImageDown className="h-5 w-5" />, title: "Thumbnails", desc: "Grab the video thumbnail in the best available resolution." },
-  { icon: <Hash className="h-5 w-5" />, title: "Descriptions & hashtags", desc: "Copy the full description or all hashtags with one click." },
+  {
+    icon: <Video className="h-5 w-5" />,
+    title: "Full videos",
+    desc: "4K, 2K, 1080p, 720p, 480p, 360p — whatever the source provides.",
+  },
+  {
+    icon: <Music className="h-5 w-5" />,
+    title: "Audio MP3",
+    desc: "Extract the audio track as a compatible MP3 file.",
+  },
+  {
+    icon: <Mic className="h-5 w-5" />,
+    title: "Audio M4A",
+    desc: "Highest-quality AAC audio in an M4A container.",
+  },
+  {
+    icon: <Film className="h-5 w-5" />,
+    title: "YouTube Shorts",
+    desc: "Download Shorts as MP4 or extract just the audio.",
+  },
+  {
+    icon: <ImageDown className="h-5 w-5" />,
+    title: "Thumbnails",
+    desc: "Grab the video thumbnail in the best available resolution.",
+  },
+  {
+    icon: <Hash className="h-5 w-5" />,
+    title: "Descriptions & hashtags",
+    desc: "Copy the full description or all hashtags with one click.",
+  },
 ];
 
 // ── Server component: SEO content sections rendered below the downloader ──
@@ -125,10 +149,10 @@ function HomeSeoContent() {
               Why use grabytclip?
             </h3>
             <p className="mb-2">
-              grabytclip is built for speed and simplicity. Unlike many online downloaders,
-              we do not require accounts, set no tracking cookies, and never store your files
-              on our servers. Everything is streamed directly to you and discarded
-              immediately.
+              grabytclip is built for speed and simplicity. Unlike many online
+              downloaders, we do not require accounts, set no tracking cookies, and never
+              store your files on our servers. Everything is streamed directly to you and
+              discarded immediately.
             </p>
             <p>
               We support all common YouTube URL formats — regular videos, Shorts, music
@@ -143,24 +167,32 @@ function HomeSeoContent() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Badge variant="accent" className="mr-2">Quality</Badge>
+                <Badge variant="accent" className="mr-2">
+                  Quality
+                </Badge>
                 Choose the highest resolution you need — 4K for large screens, 1080p or
                 720p for everyday use.
               </li>
               <li>
-                <Badge variant="accent" className="mr-2">Audio</Badge>
+                <Badge variant="accent" className="mr-2">
+                  Audio
+                </Badge>
                 Pick M4A for the best sound quality, or MP3 for maximum device
                 compatibility.
               </li>
               <li>
-                <Badge variant="accent" className="mr-2">Shorts</Badge>
+                <Badge variant="accent" className="mr-2">
+                  Shorts
+                </Badge>
                 YouTube Shorts links work exactly like regular video links — paste and
                 download.
               </li>
               <li>
-                <Badge variant="accent" className="mr-2">Metadata</Badge>
-                Use the copy tools to grab the description or hashtags before you
-                navigate away.
+                <Badge variant="accent" className="mr-2">
+                  Metadata
+                </Badge>
+                Use the copy tools to grab the description or hashtags before you navigate
+                away.
               </li>
             </ul>
           </div>
@@ -182,13 +214,16 @@ export default function HomePage() {
       <JsonLd id="ld-website" data={websiteSchema()} />
       <JsonLd id="ld-org" data={orgSchema()} />
       <JsonLd id="ld-faq" data={faqSchema(homeFaq)} />
-      <JsonLd id="ld-breadcrumb" data={{
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
-        ],
-      }} />
+      <JsonLd
+        id="ld-breadcrumb"
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
+          ],
+        }}
+      />
 
       <SiteHeader />
       <HomeClient>

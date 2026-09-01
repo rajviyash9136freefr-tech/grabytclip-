@@ -47,8 +47,8 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="mt-4 max-w-[280px] text-[12px] leading-relaxed text-[var(--text-tertiary)]">
-              A free, no-account YouTube downloader and metadata toolkit. Download videos in
-              4K, extract audio, grab thumbnails, and copy descriptions and hashtags.
+              A free, no-account YouTube downloader and metadata toolkit. Download videos
+              in 4K, extract audio, grab thumbnails, and copy descriptions and hashtags.
             </p>
           </div>
 

@@ -18,12 +18,7 @@ import { resolveServerlessDownload } from "@backend/lib/serverless-youtube";
 // ---------------------------------------------------------------------------
 
 export type JobStatus =
-  | "pending"
-  | "downloading"
-  | "merging"
-  | "converting"
-  | "ready"
-  | "error";
+  "pending" | "downloading" | "merging" | "converting" | "ready" | "error";
 
 export interface DownloadJob {
   id: string;
@@ -71,7 +66,11 @@ interface JobStore {
 const globalStore = globalThis as typeof globalThis & { __grabytclipJobs?: JobStore };
 
 if (!globalStore.__grabytclipJobs) {
-  globalStore.__grabytclipJobs = { jobs: new Map(), abortControllers: new Map(), timer: null };
+  globalStore.__grabytclipJobs = {
+    jobs: new Map(),
+    abortControllers: new Map(),
+    timer: null,
+  };
 }
 if (!globalStore.__grabytclipJobs.abortControllers) {
   globalStore.__grabytclipJobs.abortControllers = new Map();
@@ -101,9 +100,7 @@ function sweep() {
     }
   }
   if (jobs.size > MAX_JOBS) {
-    const sorted = [...jobs.entries()].sort(
-      (a, b) => a[1].updatedAt - b[1].updatedAt,
-    );
+    const sorted = [...jobs.entries()].sort((a, b) => a[1].updatedAt - b[1].updatedAt);
     for (const [id, job] of sorted.slice(0, jobs.size - MAX_JOBS)) {
       if (job.filePath) void cleanupTempFile(job.filePath);
       const controller = abortControllers.get(id);
@@ -172,7 +169,11 @@ export function createJob(input: CreateJobInput): DownloadJob {
     (j) => j.ip === input.ip && j.status !== "ready" && j.status !== "error",
   );
   if (activeForIp.length >= MAX_ACTIVE_PER_IP) {
-    throw new AppError("RATE_LIMITED", "Too many active downloads. Wait for one to finish.", 429);
+    throw new AppError(
+      "RATE_LIMITED",
+      "Too many active downloads. Wait for one to finish.",
+      429,
+    );
   }
 
   const dup = activeForIp.find((j) => activeKey(j) === activeKey(input));
@@ -210,7 +211,9 @@ export function createJob(input: CreateJobInput): DownloadJob {
   void runJob(job, controller.signal)
     .catch((e) => {
       const err =
-        e instanceof AppError ? e : new AppError("INTERNAL_ERROR", "Download failed", 500);
+        e instanceof AppError
+          ? e
+          : new AppError("INTERNAL_ERROR", "Download failed", 500);
       job.status = "error";
       job.errorCode = err.code;
       job.errorMessage = err.message;
@@ -278,13 +281,22 @@ async function runJob(job: DownloadJob, signal?: AbortSignal) {
           job.etaSec = 0;
           job.speedBytesPerSec = null;
         } else if (job.totalBytes && job.totalBytes > 0) {
-          job.percent = Math.min(95, Math.max(5, Math.round((job.downloadedBytes / job.totalBytes) * 100)));
+          job.percent = Math.min(
+            95,
+            Math.max(5, Math.round((job.downloadedBytes / job.totalBytes) * 100)),
+          );
         } else if (job.expectedBytes && job.expectedBytes > 0) {
-          job.percent = Math.min(95, Math.max(5, Math.round((job.downloadedBytes / job.expectedBytes) * 100)));
+          job.percent = Math.min(
+            95,
+            Math.max(5, Math.round((job.downloadedBytes / job.expectedBytes) * 100)),
+          );
         }
 
         if (job.totalBytes && speedEstimate > 0 && p.status !== "finished") {
-          job.etaSec = Math.max(0, Math.round((job.totalBytes - job.downloadedBytes) / speedEstimate));
+          job.etaSec = Math.max(
+            0,
+            Math.round((job.totalBytes - job.downloadedBytes) / speedEstimate),
+          );
         }
 
         job.updatedAt = now;

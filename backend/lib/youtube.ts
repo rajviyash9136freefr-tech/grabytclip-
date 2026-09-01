@@ -18,13 +18,7 @@ import {
   type RawFormat,
 } from "@backend/lib/serverless-youtube";
 
-export type {
-  VideoMetadata,
-  QualityOption,
-  AudioOption,
-  VideoFormat,
-  RawFormat,
-};
+export type { VideoMetadata, QualityOption, AudioOption, VideoFormat, RawFormat };
 
 export { resolveServerlessDownload };
 
@@ -79,7 +73,7 @@ export function estimateBytes(
 ): number | undefined {
   if (filesize) return filesize;
   if (filesizeApprox) return filesizeApprox;
-  if (tbr && durationSec > 0) return Math.round((tbr * 1000 / 8) * durationSec);
+  if (tbr && durationSec > 0) return Math.round(((tbr * 1000) / 8) * durationSec);
   return undefined;
 }
 
@@ -204,9 +198,9 @@ export async function fetchMetadata(
       return serverlessFetchMetadata(url, signal);
     }
 
-    let info: any;
+    let info: RawYtDlpInfo;
     try {
-      info = JSON.parse(result.stdout);
+      info = JSON.parse(result.stdout) as RawYtDlpInfo;
     } catch {
       return serverlessFetchMetadata(url, signal);
     }
@@ -219,9 +213,27 @@ export async function fetchMetadata(
   });
 }
 
-function normalizeMetadata(info: any): VideoMetadata {
+interface RawYtDlpInfo {
+  id?: string;
+  title?: string;
+  description?: string;
+  tags?: string[];
+  uploader?: string;
+  uploader_id?: string;
+  channel?: string;
+  channel_id?: string;
+  duration?: number;
+  view_count?: number;
+  like_count?: number;
+  upload_date?: string;
+  thumbnail?: string;
+  formats?: RawFormat[];
+  is_live?: boolean;
+}
+
+function normalizeMetadata(info: RawYtDlpInfo): VideoMetadata {
   const formats: VideoFormat[] = (info.formats ?? [])
-    .map((f: any) => {
+    .map((f: RawFormat) => {
       const vcodec = f.vcodec ?? "none";
       const acodec = f.acodec ?? "none";
       return {
@@ -265,7 +277,12 @@ function normalizeMetadata(info: any): VideoMetadata {
     const best = candidates[0];
 
     const videoSize =
-      estimateBytes(best?.filesize, best?.filesizeApprox, best?.tbr, info.duration ?? 0) ?? 0;
+      estimateBytes(
+        best?.filesize,
+        best?.filesizeApprox,
+        best?.tbr,
+        info.duration ?? 0,
+      ) ?? 0;
     const isCombined = best?.hasAudio ?? false;
     const filesizeApprox =
       isCombined || best === undefined
@@ -303,8 +320,8 @@ function normalizeMetadata(info: any): VideoMetadata {
   ];
 
   return {
-    id: info.id,
-    title: info.title,
+    id: info.id ?? "",
+    title: info.title ?? "YouTube Video",
     description: info.description ?? "",
     tags: info.tags ?? [],
     channel: info.channel ?? "Unknown channel",
@@ -377,10 +394,7 @@ export function buildVideoDownloadArgs(videoId: string, quality: string): Downlo
 }
 
 export function buildAudioDownloadArgs(videoId: string, format: string): DownloadSpec {
-  const fragments = [
-    "--concurrent-fragments",
-    String(env.DOWNLOAD_FRAGMENTS || 4),
-  ];
+  const fragments = ["--concurrent-fragments", String(env.DOWNLOAD_FRAGMENTS || 4)];
   if (format === "mp3") {
     return {
       args: ["-f", "bestaudio/best", "-x", "--audio-format", "mp3", ...fragments],
@@ -452,10 +466,7 @@ export async function ensurePlayableDownload(
       return { file, reencoded: false };
     }
 
-    const dest = join(
-      tmpdir(),
-      `grabytclip-${randomBytes(8).toString("hex")}.mp4`,
-    );
+    const dest = join(tmpdir(), `grabytclip-${randomBytes(8).toString("hex")}.mp4`);
 
     const isVideoH264 = info.videoCodec === "h264" || info.videoCodec === "avc1";
     const isAudioAac = info.audioCodec === "aac";
@@ -463,12 +474,21 @@ export async function ensurePlayableDownload(
     // If video is already H.264, stream-copy video. If VP9/AV1, transcode with ultrafast H.264 yuv420p using all CPU threads
     const vArgs = isVideoH264
       ? ["-c:v", "copy"]
-      : ["-c:v", "libx264", "-preset", "ultrafast", "-crf", "22", "-pix_fmt", "yuv420p", "-threads", "0"];
+      : [
+          "-c:v",
+          "libx264",
+          "-preset",
+          "ultrafast",
+          "-crf",
+          "22",
+          "-pix_fmt",
+          "yuv420p",
+          "-threads",
+          "0",
+        ];
 
     // If audio is already AAC, stream-copy audio. Otherwise convert to AAC
-    const aArgs = isAudioAac
-      ? ["-c:a", "copy"]
-      : ["-c:a", "aac", "-b:a", "192k"];
+    const aArgs = isAudioAac ? ["-c:a", "copy"] : ["-c:a", "aac", "-b:a", "192k"];
 
     const args = [
       "-y",
@@ -581,10 +601,7 @@ export async function downloadToTempFile(
   } = {},
 ): Promise<DownloadedFile> {
   const ext = spec.filename.split(".").pop() ?? "mp4";
-  const tmpPath = join(
-    tmpdir(),
-    `grabytclip-${randomBytes(8).toString("hex")}.${ext}`,
-  );
+  const tmpPath = join(tmpdir(), `grabytclip-${randomBytes(8).toString("hex")}.${ext}`);
   const url = `https://www.youtube.com/watch?v=${spec.videoId}`;
   const progressTemplate =
     "download:%(progress.status)s|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress.total_bytes_estimate)s|%(progress.speed)s|%(progress.eta)s";
@@ -647,9 +664,7 @@ export async function downloadToTempFile(
             if (settled) return;
             settled = true;
             cleanup();
-            reject(
-              new AppError("PROVIDER_ERROR", "yt-dlp process failed to start", 502),
-            );
+            reject(new AppError("PROVIDER_ERROR", "yt-dlp process failed to start", 502));
           });
 
           proc.on("close", async (code) => {

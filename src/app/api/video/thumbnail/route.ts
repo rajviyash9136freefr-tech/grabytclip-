@@ -43,7 +43,11 @@ function imageSize(buf: Uint8Array): { width: number; height: number } | null {
 export async function GET(request: NextRequest) {
   try {
     const videoId = request.nextUrl.searchParams.get("videoId");
-    const requestedSize = (request.nextUrl.searchParams.get("size") || request.nextUrl.searchParams.get("quality") || "maxres").toLowerCase();
+    const requestedSize = (
+      request.nextUrl.searchParams.get("size") ||
+      request.nextUrl.searchParams.get("quality") ||
+      "maxres"
+    ).toLowerCase();
 
     if (!videoId || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
       return fail("VALIDATION_ERROR", "Invalid video ID", 400);
@@ -56,13 +60,30 @@ export async function GET(request: NextRequest) {
     }
 
     let candidates: string[];
-    if (requestedSize === "4k" || requestedSize === "maxres" || requestedSize === "1080") {
+    if (
+      requestedSize === "4k" ||
+      requestedSize === "maxres" ||
+      requestedSize === "1080"
+    ) {
       candidates = ["maxresdefault.jpg", "sddefault.jpg", "hqdefault.jpg"];
-    } else if (requestedSize === "2k" || requestedSize === "sd" || requestedSize === "720" || requestedSize === "480") {
+    } else if (
+      requestedSize === "2k" ||
+      requestedSize === "sd" ||
+      requestedSize === "720" ||
+      requestedSize === "480"
+    ) {
       candidates = ["sddefault.jpg", "hqdefault.jpg", "maxresdefault.jpg"];
-    } else if (requestedSize === "hd" || requestedSize === "hq" || requestedSize === "360") {
+    } else if (
+      requestedSize === "hd" ||
+      requestedSize === "hq" ||
+      requestedSize === "360"
+    ) {
       candidates = ["hqdefault.jpg", "sddefault.jpg", "mqdefault.jpg"];
-    } else if (requestedSize === "medium" || requestedSize === "mq" || requestedSize === "180") {
+    } else if (
+      requestedSize === "medium" ||
+      requestedSize === "mq" ||
+      requestedSize === "180"
+    ) {
       candidates = ["mqdefault.jpg", "hqdefault.jpg", "default.jpg"];
     } else {
       candidates = ["maxresdefault.jpg", "sddefault.jpg", "hqdefault.jpg"];
@@ -87,7 +108,12 @@ export async function GET(request: NextRequest) {
         const dims = imageSize(buf);
 
         // Placeholder is 120x90; skip if it's the gray placeholder
-        if (dims && dims.width === 120 && dims.height === 90 && candidates.indexOf(name) < candidates.length - 1) {
+        if (
+          dims &&
+          dims.width === 120 &&
+          dims.height === 90 &&
+          candidates.indexOf(name) < candidates.length - 1
+        ) {
           continue;
         }
 

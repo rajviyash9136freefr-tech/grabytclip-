@@ -50,43 +50,51 @@ const SITE_DESC =
 export const homeFaq: FaqItem[] = [
   {
     q: "Is grabytclip free to use?",
-    a: "Yes. grabytclip is completely free — no accounts, no subscription, no watermark, " +
+    a:
+      "Yes. grabytclip is completely free — no accounts, no subscription, no watermark, " +
       "and no hidden fees. Paste a YouTube link and download.",
   },
   {
     q: "Do I need to create an account?",
-    a: "No. There is nothing to sign up for. Copy a YouTube URL, paste it into the box, and " +
+    a:
+      "No. There is nothing to sign up for. Copy a YouTube URL, paste it into the box, and " +
       "you get your download links instantly.",
   },
   {
     q: "What video qualities can I download?",
-    a: "You can download up to 4K, 2K, 1080p, 720p, 480p or 360p — whichever the source " +
+    a:
+      "You can download up to 4K, 2K, 1080p, 720p, 480p or 360p — whichever the source " +
       "video actually provides. grabytclip shows you exactly what's available for each video.",
   },
   {
     q: "Can I extract audio as MP3 or M4A?",
-    a: "Yes. Choose M4A for the best quality or MP3 for maximum compatibility. Audio is " +
+    a:
+      "Yes. Choose M4A for the best quality or MP3 for maximum compatibility. Audio is " +
       "extracted and served directly to you with one click.",
   },
   {
     q: "Can I download YouTube Shorts?",
-    a: "Yes. Paste any Shorts URL (youtube.com/shorts/...) and grabytclip treats it like any " +
+    a:
+      "Yes. Paste any Shorts URL (youtube.com/shorts/...) and grabytclip treats it like any " +
       "other video — download it as MP4 or extract the audio.",
   },
   {
     q: "Is there a download limit?",
-    a: "There is no hard limit. To keep the service fast for everyone we apply light " +
+    a:
+      "There is no hard limit. To keep the service fast for everyone we apply light " +
       "rate-limiting to stop abuse, but normal use is unrestricted.",
   },
   {
     q: "Is it safe and private?",
-    a: "Yes. Downloads are streamed directly to your device and are never stored on our " +
+    a:
+      "Yes. Downloads are streamed directly to your device and are never stored on our " +
       "servers. We use HTTPS, set no tracking cookies, and never require your Google " +
       "credentials.",
   },
   {
     q: "Does it work on mobile and desktop?",
-    a: "Yes. grabytclip is fully responsive and works in any modern browser — on Windows, " +
+    a:
+      "Yes. grabytclip is fully responsive and works in any modern browser — on Windows, " +
       "Mac, Linux, Android and iOS.",
   },
 ];
@@ -125,25 +133,40 @@ export const toolPages: Record<string, ToolPageConfig> = {
       },
     ],
     features: [
-      { title: "True MP4 output", desc: "Re-muxed MP4 files that play on phones, TVs, and desktops." },
-      { title: "Up to 4K", desc: "Get 4K, 2K, 1080p, 720p, 480p and 360p — whatever the source offers." },
-      { title: "Size estimates", desc: "See approximate file sizes before you download." },
-      { title: "No account", desc: "No sign-up, no watermark, no limits for normal use." },
+      {
+        title: "True MP4 output",
+        desc: "Re-muxed MP4 files that play on phones, TVs, and desktops.",
+      },
+      {
+        title: "Up to 4K",
+        desc: "Get 4K, 2K, 1080p, 720p, 480p and 360p — whatever the source offers.",
+      },
+      {
+        title: "Size estimates",
+        desc: "See approximate file sizes before you download.",
+      },
+      {
+        title: "No account",
+        desc: "No sign-up, no watermark, no limits for normal use.",
+      },
     ],
     faq: [
       {
         q: "What MP4 qualities are available?",
-        a: "Up to 4K (2160p), 2K (1440p), 1080p, 720p, 480p and 360p. The options shown depend " +
+        a:
+          "Up to 4K (2160p), 2K (1440p), 1080p, 720p, 480p and 360p. The options shown depend " +
           "on the resolution YouTube actually provides for that video.",
       },
       {
         q: "Why would I get a lower resolution than the original?",
-        a: "Some videos — especially live streams or very old uploads — are only available in " +
+        a:
+          "Some videos — especially live streams or very old uploads — are only available in " +
           "lower resolutions. grabytclip always shows the best quality the source offers.",
       },
       {
         q: "Will the MP4 work on my phone or TV?",
-        a: "Yes. Downloads are merged into a standard MP4 container (H.264 video when " +
+        a:
+          "Yes. Downloads are merged into a standard MP4 container (H.264 video when " +
           "available), which plays on almost every device and media player.",
       },
       {
@@ -181,25 +204,37 @@ export const toolPages: Record<string, ToolPageConfig> = {
     ],
     features: [
       { title: "MP3 & M4A", desc: "Extract audio as MP3 or M4A with a single click." },
-      { title: "Best audio track", desc: "We pull the highest-quality audio source available." },
-      { title: "Great for music & podcasts", desc: "Save songs, podcasts, lectures and audio books for offline listening." },
-      { title: "Free & no account", desc: "No sign-up, no watermark, no usage limits for normal use." },
+      {
+        title: "Best audio track",
+        desc: "We pull the highest-quality audio source available.",
+      },
+      {
+        title: "Great for music & podcasts",
+        desc: "Save songs, podcasts, lectures and audio books for offline listening.",
+      },
+      {
+        title: "Free & no account",
+        desc: "No sign-up, no watermark, no usage limits for normal use.",
+      },
     ],
     faq: [
       {
         q: "What's the difference between MP3 and M4A?",
-        a: "M4A (AAC) generally offers better quality at the same bitrate and is our " +
+        a:
+          "M4A (AAC) generally offers better quality at the same bitrate and is our " +
           "'best quality' option. MP3 is more widely compatible with older devices and " +
           "car stereos.",
       },
       {
         q: "Can I convert a YouTube playlist or whole album?",
-        a: "At the moment grabytclip converts individual videos. Paste one link at a time to " +
+        a:
+          "At the moment grabytclip converts individual videos. Paste one link at a time to " +
           "convert each song you want.",
       },
       {
         q: "Is YouTube to MP3 conversion legal?",
-        a: "Laws vary by country. Please only download audio you have the right to use — " +
+        a:
+          "Laws vary by country. Please only download audio you have the right to use — " +
           "your own uploads, Creative Commons content, or material you have permission to " +
           "save.",
       },
@@ -240,12 +275,14 @@ export const toolPages: Record<string, ToolPageConfig> = {
     faq: [
       {
         q: "Does this work with any Short?",
-        a: "Yes — paste any youtube.com/shorts/... URL. grabytclip recognizes Shorts links " +
+        a:
+          "Yes — paste any youtube.com/shorts/... URL. grabytclip recognizes Shorts links " +
           "automatically and treats them like any other video.",
       },
       {
         q: "Can I save only the sound of a Short?",
-        a: "Yes. After pasting the link, use the audio options to download just the clip's " +
+        a:
+          "Yes. After pasting the link, use the audio options to download just the clip's " +
           "sound as MP3 or M4A.",
       },
       {
@@ -283,14 +320,18 @@ export const toolPages: Record<string, ToolPageConfig> = {
     ],
     features: [
       { title: "High resolution", desc: "Downloads the best thumbnail size available." },
-      { title: "Works for any video", desc: "Regular videos, Shorts, music, and playlists." },
+      {
+        title: "Works for any video",
+        desc: "Regular videos, Shorts, music, and playlists.",
+      },
       { title: "JPG format", desc: "Saves as a standard JPG you can use anywhere." },
       { title: "Free & no account", desc: "No sign-up and no watermark." },
     ],
     faq: [
       {
         q: "What resolution is the thumbnail?",
-        a: "We serve the highest-quality thumbnail YouTube provides for the video — up to " +
+        a:
+          "We serve the highest-quality thumbnail YouTube provides for the video — up to " +
           "1280x720 for most uploads.",
       },
       {
@@ -299,7 +340,8 @@ export const toolPages: Record<string, ToolPageConfig> = {
       },
       {
         q: "Can I use the thumbnail commercially?",
-        a: "Thumbnails belong to their respective creators. Only download and use them if " +
+        a:
+          "Thumbnails belong to their respective creators. Only download and use them if " +
           "you own the video or have permission from the owner.",
       },
     ],
@@ -324,7 +366,9 @@ export function faqSchema(faq: FaqItem[]) {
   };
 }
 
-export function webAppSchema(opts: { name?: string; description?: string; url?: string } = {}) {
+export function webAppSchema(
+  opts: { name?: string; description?: string; url?: string } = {},
+) {
   return {
     "@context": "https://schema.org",
     "@type": "WebApplication",
