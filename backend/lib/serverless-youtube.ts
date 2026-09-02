@@ -1,4 +1,5 @@
 import { AppError } from "@backend/lib/errors";
+import { env } from "@backend/env";
 
 // ---------------------------------------------------------------------------
 // Types (compatible with existing frontend components)
@@ -100,7 +101,15 @@ export async function fetchMetadata(
     throw new AppError("VALIDATION_ERROR", "Invalid YouTube video ID or URL", 400);
   }
 
-  // Attempt 1: YouTube InnerTube API (Full descriptions, keywords/hashtags, durations from edge)
+  // Attempt 1: Official YouTube Data API v3 (Fastest, 100% authoritative metadata)
+  try {
+    const dataApiResult = await fetchYouTubeDataApi(videoId, signal);
+    if (dataApiResult) return dataApiResult;
+  } catch {
+    // Continue to fallback
+  }
+
+  // Attempt 2: YouTube InnerTube API (Full descriptions, keywords/hashtags, durations from edge)
   try {
     const innertubeData = await fetchYouTubeInnertube(videoId, signal);
     if (innertubeData) return innertubeData;
@@ -108,7 +117,7 @@ export async function fetchMetadata(
     // Continue to fallback
   }
 
-  // Attempt 2: Fetch YouTube video page for rich details
+  // Attempt 3: Fetch YouTube video page for rich details
   try {
     const pageData = await fetchYouTubePageData(videoId, signal);
     if (pageData) return pageData;
@@ -116,7 +125,7 @@ export async function fetchMetadata(
     // Continue to fallback
   }
 
-  // Attempt 3: YouTube oEmbed API (Guaranteed reliable, fast, public)
+  // Attempt 4: YouTube oEmbed API (Guaranteed reliable, fast, public)
   try {
     const oembedData = await fetchYouTubeOembed(videoId, signal);
     if (oembedData) return oembedData;
@@ -124,8 +133,122 @@ export async function fetchMetadata(
     // Continue to fallback
   }
 
-  // Attempt 4: Generate standard metadata from Video ID
+  // Attempt 5: Generate standard metadata from Video ID
   return generateFallbackMetadata(videoId);
+}
+
+function parseIsoDuration(duration?: string): number {
+  if (!duration) return 0;
+  const match = duration.match(/P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return 0;
+  const days = parseInt(match[1] || "0", 10);
+  const hours = parseInt(match[2] || "0", 10);
+  const minutes = parseInt(match[3] || "0", 10);
+  const seconds = parseInt(match[4] || "0", 10);
+  return days * 86400 + hours * 3600 + minutes * 60 + seconds;
+}
+
+async function fetchYouTubeDataApi(
+  videoId: string,
+  signal?: AbortSignal,
+): Promise<VideoMetadata | null> {
+  const apiKey = env.YOUTUBE_API_KEY || process.env.YOUTUBE_API_KEY;
+  if (!apiKey) return null;
+
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${apiKey}`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) return null;
+
+  const data = (await res.json()) as {
+    items?: Array<{
+      snippet?: {
+        title?: string;
+        description?: string;
+        channelTitle?: string;
+        channelId?: string;
+        publishedAt?: string;
+        tags?: string[];
+        thumbnails?: Record<string, { url?: string }>;
+      };
+      contentDetails?: {
+        duration?: string;
+      };
+      statistics?: {
+        viewCount?: string;
+        likeCount?: string;
+      };
+    }>;
+  };
+
+  const item = data.items?.[0];
+  if (!item?.snippet?.title) return null;
+
+  const { snippet, contentDetails, statistics } = item;
+  const durationSec = parseIsoDuration(contentDetails?.duration);
+  const viewCount = parseInt(statistics?.viewCount || "0", 10) || 0;
+  const likeCount = statistics?.likeCount ? parseInt(statistics.likeCount, 10) : null;
+  const uploadDate = snippet.publishedAt?.slice(0, 10) || "Unknown";
+  const thumbnail =
+    snippet.thumbnails?.maxres?.url ||
+    snippet.thumbnails?.standard?.url ||
+    snippet.thumbnails?.high?.url ||
+    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
+  const bestAudioSize =
+    durationSec > 0 ? Math.round(((128 * 1000) / 8) * durationSec) : undefined;
+
+  const qualityOptions: QualityOption[] = QUALITY_TIERS.map((tier) => {
+    const estimatedSize =
+      durationSec > 0
+        ? Math.round(((tier.bitrateMultiplier * 1000) / 8) * durationSec)
+        : undefined;
+
+    return {
+      key: tier.key,
+      label: tier.label,
+      height: tier.height === Infinity ? 1080 : tier.height,
+      ext: "mp4",
+      contentType: "video/mp4",
+      filesizeApprox: estimatedSize,
+      available: true,
+    };
+  });
+
+  const audioOptions: AudioOption[] = [
+    {
+      key: "m4a",
+      label: "M4A (best quality)",
+      ext: "m4a",
+      contentType: "audio/mp4",
+      filesizeApprox: bestAudioSize,
+    },
+    {
+      key: "mp3",
+      label: "MP3",
+      ext: "mp3",
+      contentType: "audio/mpeg",
+      filesizeApprox: bestAudioSize,
+    },
+  ];
+
+  return {
+    id: videoId,
+    title: snippet.title || "YouTube Video",
+    description: snippet.description || "",
+    tags: snippet.tags || [],
+    channel: snippet.channelTitle || "YouTube Creator",
+    channelId: snippet.channelId || "",
+    durationSec,
+    viewCount,
+    likeCount,
+    uploadDate,
+    thumbnail,
+    formats: [],
+    qualityOptions,
+    audioOptions,
+    maxHeight: 1080,
+    isLive: false,
+  };
 }
 
 export function extractVideoId(input: string): string | null {

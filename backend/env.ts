@@ -3,6 +3,10 @@ import { z } from "zod";
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
+  YOUTUBE_API_KEY: z
+    .string()
+    .optional()
+    .default("AIzaSyA9udT55qjCwXEflckeAS1SjkLLFbXU5KQ"),
   YTDLP_PATH: z.string().default("yt-dlp"),
   // ffmpeg / ffprobe used to guarantee playable H.264/AAC output for high-res sources
   // (YouTube serves 2K/4K as VP9/AV1, which Windows Media Player cannot decode).
