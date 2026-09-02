@@ -87,8 +87,8 @@ export const createDownloadSchema = z
     type: z.enum(["video", "audio"]),
     quality: z.enum(DOWNLOAD_QUALITIES as [string, ...string[]]).optional(),
     format: z.enum(DOWNLOAD_FORMATS as [string, ...string[]]).optional(),
-    expectedBytes: z.number().int().positive().optional(),
-    durationSec: z.number().int().positive().optional(),
+    expectedBytes: z.number().int().nonnegative().nullish(),
+    durationSec: z.number().int().nonnegative().nullish(),
   })
   .superRefine((val, ctx) => {
     if (val.type === "video" && !val.quality) {

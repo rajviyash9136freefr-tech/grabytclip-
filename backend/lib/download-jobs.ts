@@ -52,8 +52,8 @@ interface CreateJobInput {
   quality?: string;
   format?: string;
   ip: string;
-  expectedBytes?: number;
-  durationSec?: number;
+  expectedBytes?: number | null;
+  durationSec?: number | null;
   signal?: AbortSignal;
 }
 
@@ -195,8 +195,8 @@ export function createJob(input: CreateJobInput): DownloadJob {
     totalBytes: input.expectedBytes ?? null,
     speedBytesPerSec: null,
     etaSec: null,
-    expectedBytes: input.expectedBytes,
-    durationSec: input.durationSec,
+    expectedBytes: input.expectedBytes ?? undefined,
+    durationSec: input.durationSec ?? undefined,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };

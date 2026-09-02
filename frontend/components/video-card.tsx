@@ -102,8 +102,14 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
             type,
             quality,
             format,
-            expectedBytes,
-            durationSec,
+            expectedBytes:
+              typeof expectedBytes === "number" && expectedBytes > 0
+                ? expectedBytes
+                : undefined,
+            durationSec:
+              typeof durationSec === "number" && durationSec > 0
+                ? durationSec
+                : undefined,
           }),
         });
         const json = (await res.json()) as

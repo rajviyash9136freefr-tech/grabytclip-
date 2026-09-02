@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
       quality,
       format,
       ip,
-      expectedBytes,
-      durationSec,
+      expectedBytes: expectedBytes ?? undefined,
+      durationSec: durationSec ?? undefined,
       signal: abortController.signal,
     });
 

@@ -3,6 +3,7 @@ import {
   videoUrlSchema,
   extractYoutubeId,
   downloadQuerySchema,
+  createDownloadSchema,
 } from "@backend/lib/validate";
 
 describe("extractYoutubeId", () => {
@@ -77,6 +78,43 @@ describe("downloadQuerySchema", () => {
       downloadQuerySchema.parse({
         url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         videoId: "not-a-real-id!",
+        type: "video",
+      }),
+    ).toThrow();
+  });
+});
+
+describe("createDownloadSchema", () => {
+  it("accepts video download with 0 or nullish durationSec / expectedBytes", () => {
+    const result = createDownloadSchema.parse({
+      videoId: "dQw4w9WgXcQ",
+      type: "video",
+      quality: "best",
+      durationSec: 0,
+      expectedBytes: 0,
+    });
+    expect(result.videoId).toBe("dQw4w9WgXcQ");
+    expect(result.quality).toBe("best");
+    expect(result.durationSec).toBe(0);
+    expect(result.expectedBytes).toBe(0);
+  });
+
+  it("accepts audio download with format and null expectedBytes", () => {
+    const result = createDownloadSchema.parse({
+      videoId: "dQw4w9WgXcQ",
+      type: "audio",
+      format: "mp3",
+      durationSec: null,
+      expectedBytes: null,
+    });
+    expect(result.type).toBe("audio");
+    expect(result.format).toBe("mp3");
+  });
+
+  it("rejects video without quality", () => {
+    expect(() =>
+      createDownloadSchema.parse({
+        videoId: "dQw4w9WgXcQ",
         type: "video",
       }),
     ).toThrow();
