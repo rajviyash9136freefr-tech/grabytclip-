@@ -17,29 +17,29 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o 
 # Enable pnpm
 RUN npm install -g pnpm@10.34.5
 
-# Create non-root user (UID 1000 required by Hugging Face Spaces)
-RUN useradd -m -u 1000 user
-
 WORKDIR /app
 
-# Copy dependency specifications first for Docker layer caching
-COPY --chown=user:user package.json pnpm-lock.yaml ./
+# Ensure /app directory is owned by node user (node user has UID 1000 built-in)
+RUN chown -R node:node /app
 
-# Install dependencies as user
-USER user
+# Copy dependency specifications first for Docker layer caching
+COPY --chown=node:node package.json pnpm-lock.yaml ./
+
+# Install dependencies as node user
+USER node
 RUN pnpm install --frozen-lockfile
 
 # Copy the rest of the application code
-COPY --chown=user:user . .
+COPY --chown=node:node . .
 
 # Build Next.js production bundle
 ENV NODE_ENV=production
 RUN pnpm build
 
-# Hugging Face Spaces uses port 7860
+# Default port (Render overrides with $PORT, HuggingFace uses 7860)
 ENV PORT=7860
 ENV HOSTNAME="0.0.0.0"
 EXPOSE 7860
 
-# Start production server
-CMD ["pnpm", "start", "-p", "7860"]
+# Start production server (Next.js automatically reads $PORT)
+CMD ["pnpm", "start"]
