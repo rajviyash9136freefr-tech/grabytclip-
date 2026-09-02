@@ -34,7 +34,10 @@ export interface ToolPageConfig {
 }
 
 export function getBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "https://grabytclip.com";
+  return (
+    process.env.NEXT_PUBLIC_APP_URL ??
+    "https://grabytclip.rajviyash9136freefr.workers.dev"
+  );
 }
 
 const SITE_NAME = "grabytclip";

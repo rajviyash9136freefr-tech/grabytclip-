@@ -16,7 +16,8 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://grabytclip.com";
+const appUrl =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://grabytclip.rajviyash9136freefr.workers.dev";
 const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION;
 
 export const metadata: Metadata = {

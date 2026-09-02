@@ -21,4 +21,8 @@
     // see https://opennext.js.org/cloudflare/howtos/image
     "binding": "IMAGES",
   },
+  "vars": {
+    "NEXT_PUBLIC_APP_URL": "https://grabytclip.rajviyash9136freefr.workers.dev",
+    "YOUTUBE_API_KEY": "AIzaSyA9udT55qjCwXEflckeAS1SjkLLFbXU5KQ",
+  },
 }

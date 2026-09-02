@@ -2,7 +2,9 @@ import type { MetadataRoute } from "next";
 import { toolPageList } from "@frontend/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://grabytclip.com";
+  const base =
+    process.env.NEXT_PUBLIC_APP_URL ??
+    "https://grabytclip.rajviyash9136freefr.workers.dev";
 
   const toolPages = toolPageList.map((tool) => ({
     url: `${base}/${tool.slug}`,
