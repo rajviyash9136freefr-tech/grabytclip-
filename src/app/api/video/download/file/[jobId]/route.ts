@@ -20,6 +20,10 @@ export async function GET(
 
   const job = getJob(jobId);
   if (!job) {
+    const backendUrl = process.env.BACKEND_URL || "https://grabytclip-1.onrender.com";
+    if (backendUrl && !backendUrl.includes("localhost")) {
+      return Response.redirect(`${backendUrl}/api/video/download/file/${jobId}`, 302);
+    }
     return fail("NOT_FOUND", "Download job not found or expired.", 404);
   }
 

@@ -21,7 +21,12 @@ const CSP = {
     "https://i.ytimg.com",
   ],
   "font-src": ["'self'", "data:"],
-  "connect-src": ["'self'"],
+  "connect-src": [
+    "'self'",
+    "https://grabytclip-1.onrender.com",
+    "https://*.onrender.com",
+    "https://*.workers.dev",
+  ],
   "frame-src": ["'none'"],
   "object-src": ["'none'"],
   "base-uri": ["'self'"],
@@ -53,6 +58,22 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value:
+              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+          },
+        ],
+      },
+      {
         source: "/:path*",
         headers: [
           { key: "Content-Security-Policy", value: cspString },
@@ -68,7 +89,7 @@ const nextConfig: NextConfig = {
             value: "camera=(), microphone=(), geolocation=(), payment=()",
           },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
         ],
       },
     ];

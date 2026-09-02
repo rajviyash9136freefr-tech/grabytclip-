@@ -203,6 +203,43 @@ export async function createJob(input: CreateJobInput): Promise<DownloadJob> {
 
   const hasYtdlp = await isYtdlpAvailable();
   if (!hasYtdlp) {
+    const backendUrl = env.BACKEND_URL || "https://grabytclip-1.onrender.com";
+    if (backendUrl && !backendUrl.includes("localhost")) {
+      try {
+        const backendRes = await fetch(`${backendUrl}/api/video/download`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            videoId: job.videoId,
+            type: job.type,
+            quality: job.quality,
+            format: job.format,
+            expectedBytes: input.expectedBytes,
+            durationSec: input.durationSec,
+          }),
+          signal: AbortSignal.timeout(15_000),
+        });
+
+        if (backendRes.ok) {
+          const backendData = (await backendRes.json()) as {
+            data?: { jobId: string; job?: Partial<DownloadJob> };
+          };
+          if (backendData?.data?.jobId) {
+            const remoteJob = backendData.data.job;
+            job.id = backendData.data.jobId;
+            job.status = remoteJob?.status || "downloading";
+            job.percent = remoteJob?.percent || 10;
+            job.streamUrl = `${backendUrl}/api/video/download/file/${backendData.data.jobId}`;
+            job.updatedAt = Date.now();
+            jobs.set(job.id, job);
+            return job;
+          }
+        }
+      } catch {
+        // Fallback to direct serverless resolver
+      }
+    }
+
     try {
       job.status = "downloading";
       job.percent = 50;

@@ -6,6 +6,12 @@ const envSchema = z.object({
     .string()
     .url()
     .default("https://grabytclip.rajviyash9136freefr.workers.dev"),
+  BACKEND_URL: z.string().url().optional().default("https://grabytclip-1.onrender.com"),
+  NEXT_PUBLIC_BACKEND_URL: z
+    .string()
+    .url()
+    .optional()
+    .default("https://grabytclip-1.onrender.com"),
   YOUTUBE_API_KEY: z
     .string()
     .optional()
