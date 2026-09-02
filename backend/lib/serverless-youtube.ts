@@ -113,7 +113,7 @@ export async function fetchMetadata(
   try {
     const innertubeData = await fetchYouTubeInnertube(videoId, signal);
     if (innertubeData) return innertubeData;
-  } catch (e) {
+  } catch {
     // Continue to fallback
   }
 
@@ -121,7 +121,7 @@ export async function fetchMetadata(
   try {
     const pageData = await fetchYouTubePageData(videoId, signal);
     if (pageData) return pageData;
-  } catch (e) {
+  } catch {
     // Continue to fallback
   }
 
@@ -129,7 +129,7 @@ export async function fetchMetadata(
   try {
     const oembedData = await fetchYouTubeOembed(videoId, signal);
     if (oembedData) return oembedData;
-  } catch (e) {
+  } catch {
     // Continue to fallback
   }
 
@@ -600,8 +600,6 @@ export async function resolveServerlessDownload(opts: {
     isAudioOnly: type === "audio",
     aFormat: format === "mp3" ? "mp3" : "m4a",
   };
-
-  let lastError: string = "All extraction providers were temporarily busy.";
 
   for (const instance of COBALT_INSTANCES) {
     // Attempt 1: Cobalt v10 standard endpoint

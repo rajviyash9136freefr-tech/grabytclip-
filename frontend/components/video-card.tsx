@@ -12,7 +12,6 @@ import {
   hashtagify,
   formatFileSize,
   formatSpeed,
-  formatEta,
 } from "@frontend/lib/format";
 
 // ---------------------------------------------------------------------------
@@ -49,10 +48,13 @@ interface PendingOption {
 
 interface VideoCardProps {
   metadata: VideoMetadata;
-  onThumbnailDownload: () => string;
+  onThumbnailDownload?: () => string;
 }
 
-export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
+export function VideoCard({
+  metadata,
+  onThumbnailDownload: _onThumbnailDownload,
+}: VideoCardProps) {
   const {
     id,
     title,
@@ -78,9 +80,10 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
 
   // Cleanup intervals on unmount
   useEffect(() => {
+    const currentIntervals = intervals.current;
     return () => {
-      for (const key of Object.keys(intervals.current)) {
-        clearInterval(intervals.current[key]!);
+      for (const key of Object.keys(currentIntervals)) {
+        clearInterval(currentIntervals[key]!);
       }
     };
   }, []);
@@ -617,11 +620,6 @@ function DownloadProgressCard({
   const barPercent = Math.min(
     100,
     Math.max(job.status === "ready" ? 100 : 5, job.percent),
-  );
-  const safeTotal = Math.max(
-    job.totalBytes || 0,
-    job.downloadedBytes || 0,
-    job.expectedBytes || 0,
   );
   const downloadedFormatted = formatFileSize(job.downloadedBytes || 0);
 
