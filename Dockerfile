@@ -34,7 +34,7 @@ COPY --chown=node:node . .
 
 # Build Next.js production bundle
 ENV NODE_ENV=production
-RUN pnpm build
+RUN pnpm build:local
 
 # Default port (Render overrides with $PORT, HuggingFace uses 7860)
 ENV PORT=7860
