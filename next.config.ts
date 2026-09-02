@@ -39,6 +39,12 @@ const cspString = Object.entries(CSP)
 
 const nextConfig: NextConfig = {
   serverExternalPackages: [],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   webpack: (config) => {
     config.output = config.output || {};
     config.output.hashFunction = "xxhash64";

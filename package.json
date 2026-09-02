@@ -5,9 +5,10 @@
   "description": "grabytclip — YouTube video & audio downloader with metadata copy tools",
   "packageManager": "pnpm@10.34.5",
   "scripts": {
-    "build": "opennextjs-cloudflare build",
+    "build": "next build",
     "build:local": "next build",
     "build:worker": "opennextjs-cloudflare build",
+    "build:cloudflare": "opennextjs-cloudflare build",
     "dev": "next dev",
     "start": "next start -p 3000",
     "lint": "eslint .",
