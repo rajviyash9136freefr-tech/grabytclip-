@@ -6,13 +6,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     python3 \
     python3-pip \
+    python3-venv \
     curl \
     ca-certificates \
+    && pip3 install --no-cache-dir --break-system-packages yt-dlp \
+    && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/bin/yt-dlp \
+    && chmod a+rx /usr/bin/yt-dlp \
     && rm -rf /var/lib/apt/lists/*
-
-# Install official standalone yt-dlp binary to /usr/local/bin
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
-    && chmod a+rx /usr/local/bin/yt-dlp
 
 # Enable pnpm
 RUN npm install -g pnpm@10.34.5

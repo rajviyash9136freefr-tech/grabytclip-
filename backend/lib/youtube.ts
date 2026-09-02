@@ -30,19 +30,21 @@ let ytdlpChecked = false;
 let ytdlpAvailable = false;
 
 export async function isYtdlpAvailable(): Promise<boolean> {
-  if (ytdlpChecked) return ytdlpAvailable;
+  if (ytdlpAvailable) return true;
 
   const candidates = [
     env.YTDLP_PATH,
     "yt-dlp",
     "/usr/local/bin/yt-dlp",
     "/usr/bin/yt-dlp",
+    "python3",
   ].filter(Boolean);
 
   for (const bin of candidates) {
     try {
+      const args = bin === "python3" ? ["-m", "yt_dlp", "--version"] : ["--version"];
       const res = await new Promise<boolean>((resolve) => {
-        const proc = spawn(bin, ["--version"], {
+        const proc = spawn(bin, args, {
           windowsHide: true,
           stdio: "ignore",
         });
@@ -53,7 +55,7 @@ export async function isYtdlpAvailable(): Promise<boolean> {
             // ignore
           }
           resolve(false);
-        }, 3000);
+        }, 4000);
         proc.on("error", () => {
           clearTimeout(timer);
           resolve(false);
@@ -65,7 +67,7 @@ export async function isYtdlpAvailable(): Promise<boolean> {
       });
 
       if (res) {
-        env.YTDLP_PATH = bin;
+        env.YTDLP_PATH = bin === "python3" ? "python3 -m yt_dlp" : bin;
         ytdlpAvailable = true;
         ytdlpChecked = true;
         return true;
@@ -75,8 +77,6 @@ export async function isYtdlpAvailable(): Promise<boolean> {
     }
   }
 
-  ytdlpAvailable = false;
-  ytdlpChecked = true;
   return false;
 }
 
