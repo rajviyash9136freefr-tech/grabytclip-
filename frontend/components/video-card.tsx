@@ -113,7 +113,18 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
           }),
         });
         const json = (await res.json()) as
-          { data: { jobId: string } } | { error: { message: string } };
+          | {
+              data: {
+                jobId: string;
+                job?: {
+                  status?: string;
+                  streamUrl?: string;
+                  filename?: string;
+                  percent?: number;
+                };
+              };
+            }
+          | { error: { message: string } };
 
         if (!res.ok || !("data" in json)) {
           const msg = "error" in json ? json.error.message : "Job creation failed";
@@ -133,7 +144,33 @@ export function VideoCard({ metadata, onThumbnailDownload }: VideoCardProps) {
           return;
         }
 
-        const { jobId } = json.data;
+        const { jobId, job } = json.data;
+
+        // If serverless resolved streamUrl immediately:
+        if (job?.status === "ready" && job.streamUrl) {
+          setJobs((prev) => ({
+            ...prev,
+            [optionKey]: {
+              jobId,
+              status: "ready",
+              percent: 100,
+              downloadedBytes: 0,
+              totalBytes: null,
+              speed: null,
+              eta: null,
+            },
+          }));
+
+          const a = document.createElement("a");
+          a.href = job.streamUrl;
+          if (job.filename) a.download = job.filename;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          return;
+        }
 
         // Initial state
         setJobs((prev) => ({

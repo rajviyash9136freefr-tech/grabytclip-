@@ -162,7 +162,7 @@ export function toJobView(job: DownloadJob) {
   };
 }
 
-export function createJob(input: CreateJobInput): DownloadJob {
+export async function createJob(input: CreateJobInput): Promise<DownloadJob> {
   sweep();
 
   const activeForIp = [...jobs.values()].filter(
@@ -200,6 +200,41 @@ export function createJob(input: CreateJobInput): DownloadJob {
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
+
+  const hasYtdlp = await isYtdlpAvailable();
+  if (!hasYtdlp) {
+    try {
+      job.status = "downloading";
+      job.percent = 50;
+      const result = await resolveServerlessDownload({
+        videoId: job.videoId,
+        type: job.type,
+        quality: job.quality,
+        format: job.format,
+        signal: input.signal,
+      });
+      job.status = "ready";
+      job.percent = 100;
+      job.streamUrl = result.streamUrl;
+      job.filename = result.filename;
+      job.contentType = result.contentType;
+      job.updatedAt = Date.now();
+      jobs.set(id, job);
+      return job;
+    } catch (e) {
+      const err =
+        e instanceof AppError
+          ? e
+          : new AppError("INTERNAL_ERROR", "Download link generation failed", 500);
+      job.status = "error";
+      job.errorCode = err.code;
+      job.errorMessage = err.message;
+      job.updatedAt = Date.now();
+      jobs.set(id, job);
+      throw err;
+    }
+  }
+
   jobs.set(id, job);
 
   const controller = new AbortController();

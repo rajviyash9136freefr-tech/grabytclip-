@@ -100,7 +100,15 @@ export async function fetchMetadata(
     throw new AppError("VALIDATION_ERROR", "Invalid YouTube video ID or URL", 400);
   }
 
-  // Attempt 1: Fetch YouTube video page for rich details (duration, channel, view count)
+  // Attempt 1: YouTube InnerTube API (Full descriptions, keywords/hashtags, durations from edge)
+  try {
+    const innertubeData = await fetchYouTubeInnertube(videoId, signal);
+    if (innertubeData) return innertubeData;
+  } catch (e) {
+    // Continue to fallback
+  }
+
+  // Attempt 2: Fetch YouTube video page for rich details
   try {
     const pageData = await fetchYouTubePageData(videoId, signal);
     if (pageData) return pageData;
@@ -108,7 +116,7 @@ export async function fetchMetadata(
     // Continue to fallback
   }
 
-  // Attempt 2: YouTube oEmbed API (Guaranteed reliable, fast, public)
+  // Attempt 3: YouTube oEmbed API (Guaranteed reliable, fast, public)
   try {
     const oembedData = await fetchYouTubeOembed(videoId, signal);
     if (oembedData) return oembedData;
@@ -116,7 +124,7 @@ export async function fetchMetadata(
     // Continue to fallback
   }
 
-  // Attempt 3: Generate standard metadata from Video ID
+  // Attempt 4: Generate standard metadata from Video ID
   return generateFallbackMetadata(videoId);
 }
 
@@ -137,6 +145,110 @@ interface YouTubeVideoDetails {
   isLiveContent?: boolean;
   shortDescription?: string;
   keywords?: string[];
+}
+
+async function fetchYouTubeInnertube(
+  videoId: string,
+  signal?: AbortSignal,
+): Promise<VideoMetadata | null> {
+  const res = await fetch(
+    "https://www.youtube.com/youtubei/v1/player?prettyPrint=false",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+        "X-YouTube-Client-Name": "1",
+        "X-YouTube-Client-Version": "2.20240901.00.00",
+        Origin: "https://www.youtube.com",
+      },
+      body: JSON.stringify({
+        videoId,
+        context: {
+          client: {
+            clientName: "WEB",
+            clientVersion: "2.20240901.00.00",
+            hl: "en",
+            gl: "US",
+          },
+        },
+      }),
+      signal,
+    },
+  );
+
+  if (!res.ok) return null;
+  const data = (await res.json()) as {
+    videoDetails?: YouTubeVideoDetails;
+    microformat?: { playerMicroformatRenderer?: { uploadDate?: string } };
+  };
+
+  const details = data.videoDetails;
+  if (!details || !details.title) return null;
+
+  const durationSec = parseInt(details.lengthSeconds || "0", 10) || 0;
+  const viewCount = parseInt(details.viewCount || "0", 10) || 0;
+  const isLive = Boolean(details.isLiveContent);
+  const uploadDate =
+    data.microformat?.playerMicroformatRenderer?.uploadDate?.slice(0, 10) || "Unknown";
+
+  const thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  const bestAudioSize =
+    durationSec > 0 ? Math.round(((128 * 1000) / 8) * durationSec) : undefined;
+
+  const qualityOptions: QualityOption[] = QUALITY_TIERS.map((tier) => {
+    const estimatedSize =
+      durationSec > 0
+        ? Math.round(((tier.bitrateMultiplier * 1000) / 8) * durationSec)
+        : undefined;
+
+    return {
+      key: tier.key,
+      label: tier.label,
+      height: tier.height === Infinity ? 1080 : tier.height,
+      ext: "mp4",
+      contentType: "video/mp4",
+      filesizeApprox: estimatedSize,
+      available: true,
+    };
+  });
+
+  const audioOptions: AudioOption[] = [
+    {
+      key: "m4a",
+      label: "M4A (best quality)",
+      ext: "m4a",
+      contentType: "audio/mp4",
+      filesizeApprox: bestAudioSize,
+    },
+    {
+      key: "mp3",
+      label: "MP3",
+      ext: "mp3",
+      contentType: "audio/mpeg",
+      filesizeApprox: bestAudioSize,
+    },
+  ];
+
+  return {
+    id: videoId,
+    title: details.title,
+    description: details.shortDescription || "",
+    tags: details.keywords || [],
+    channel: details.author || "YouTube Creator",
+    channelId: details.channelId || "",
+    durationSec,
+    viewCount,
+    likeCount: null,
+    uploadDate,
+    thumbnail,
+    formats: [],
+    qualityOptions,
+    audioOptions,
+    maxHeight: 1080,
+    isLive,
+  };
 }
 
 async function fetchYouTubePageData(
@@ -314,14 +426,20 @@ function generateFallbackMetadata(
 }
 
 // ---------------------------------------------------------------------------
-// Serverless Download Stream Resolver (Cobalt API Multi-Instance Engine)
+// Serverless Download Stream Resolver (Multi-Instance Cobalt & Edge Resolver)
 // ---------------------------------------------------------------------------
 
 const COBALT_INSTANCES = [
-  "https://api.cobalt.tools",
+  "https://co.wuk.sh",
   "https://cobalt.api.scav.top",
-  "https://api.wuk.sh",
+  "https://cobalt.canine.tools",
+  "https://cobalt.synaptic.tech",
+  "https://dl.khub.win",
+  "https://cobalt.qewertyy.dev",
   "https://cobalt-api.kwiatekm.tokyo",
+  "https://cobalt.ducks.party",
+  "https://cobalt.projectsegfau.lt",
+  "https://api.server.garden",
   "https://cobalt-api.hyper.lol",
 ];
 
@@ -340,8 +458,12 @@ export async function resolveServerlessDownload(opts: {
 }): Promise<ServerlessDownloadResult> {
   const { videoId, type, quality = "1080", format = "mp3", signal } = opts;
   const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  const ext = type === "audio" ? (format === "mp3" ? "mp3" : "m4a") : "mp4";
+  const filename = `grabytclip-${videoId}-${type === "video" ? quality + "p" : format}.${ext}`;
+  const contentType =
+    type === "audio" ? (format === "mp3" ? "audio/mpeg" : "audio/mp4") : "video/mp4";
 
-  const cobaltPayload = {
+  const cobaltV10Payload = {
     url: youtubeUrl,
     videoQuality: quality === "best" ? "max" : quality,
     downloadMode: type === "audio" ? "audio" : "auto",
@@ -349,12 +471,20 @@ export async function resolveServerlessDownload(opts: {
     youtubeVideoCodec: "h264",
   };
 
+  const cobaltV7Payload = {
+    url: youtubeUrl,
+    vQuality: quality === "best" ? "1080" : quality,
+    isAudioOnly: type === "audio",
+    aFormat: format === "mp3" ? "mp3" : "m4a",
+  };
+
   let lastError: string = "All extraction providers were temporarily busy.";
 
   for (const instance of COBALT_INSTANCES) {
+    // Attempt 1: Cobalt v10 standard endpoint
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12_000);
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
       if (signal) {
         signal.addEventListener("abort", () => controller.abort(), { once: true });
       }
@@ -366,62 +496,90 @@ export async function resolveServerlessDownload(opts: {
           "Content-Type": "application/json",
           "User-Agent": "grabytclip/1.0 (Cloudflare Worker Edge)",
         },
-        body: JSON.stringify(cobaltPayload),
+        body: JSON.stringify(cobaltV10Payload),
         signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
-      if (!res.ok) {
-        lastError = `Provider ${instance} returned status ${res.status}`;
-        continue;
-      }
-
-      const data = (await res.json()) as {
-        status?: string;
-        url?: string;
-        filename?: string;
-        text?: string;
-        picker?: Array<{ url: string; type?: string }>;
-      };
-
-      if (data.status === "error") {
-        lastError = data.text || "Failed to process download";
-        continue;
-      }
-
-      const streamUrl =
-        data.url ||
-        (data.status === "picker" && data.picker && data.picker[0]?.url) ||
-        null;
-
-      if (streamUrl) {
-        const ext = type === "audio" ? (format === "mp3" ? "mp3" : "m4a") : "mp4";
-        const filename =
-          data.filename ||
-          `grabytclip-${videoId}-${type === "video" ? quality + "p" : format}.${ext}`;
-        const contentType =
-          type === "audio"
-            ? format === "mp3"
-              ? "audio/mpeg"
-              : "audio/mp4"
-            : "video/mp4";
-
-        return {
-          streamUrl,
-          filename,
-          contentType,
+      if (res.ok) {
+        const data = (await res.json()) as {
+          status?: string;
+          url?: string;
+          filename?: string;
+          text?: string;
+          picker?: Array<{ url: string; type?: string }>;
         };
+
+        const streamUrl =
+          data.url ||
+          (data.status === "picker" && data.picker && data.picker[0]?.url) ||
+          (data.status === "stream" && data.url) ||
+          null;
+
+        if (streamUrl) {
+          return {
+            streamUrl,
+            filename: data.filename || filename,
+            contentType,
+          };
+        }
       }
-    } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err);
-      continue;
+    } catch {
+      // Continue to v7 endpoint
+    }
+
+    // Attempt 2: Cobalt v7 /api/json endpoint
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      if (signal) {
+        signal.addEventListener("abort", () => controller.abort(), { once: true });
+      }
+
+      const res = await fetch(`${instance}/api/json`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "User-Agent": "grabytclip/1.0 (Cloudflare Worker Edge)",
+        },
+        body: JSON.stringify(cobaltV7Payload),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = (await res.json()) as {
+          status?: string;
+          url?: string;
+          filename?: string;
+          picker?: Array<{ url: string; type?: string }>;
+        };
+
+        const streamUrl =
+          data.url ||
+          (data.status === "picker" && data.picker && data.picker[0]?.url) ||
+          (data.status === "stream" && data.url) ||
+          null;
+
+        if (streamUrl) {
+          return {
+            streamUrl,
+            filename: data.filename || filename,
+            contentType,
+          };
+        }
+      }
+    } catch {
+      // Continue to next instance
     }
   }
 
   throw new AppError(
     "PROVIDER_ERROR",
-    `Could not generate download link (${lastError}). Please try again in a few moments.`,
+    "Download stream is temporarily unavailable for this video on the serverless edge. Please try again in a moment.",
     502,
   );
 }

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       once: true,
     });
 
-    const job = createJob({
+    const job = await createJob({
       videoId,
       type,
       quality,
