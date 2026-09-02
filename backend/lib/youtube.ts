@@ -31,34 +31,53 @@ let ytdlpAvailable = false;
 
 export async function isYtdlpAvailable(): Promise<boolean> {
   if (ytdlpChecked) return ytdlpAvailable;
-  try {
-    const bin = env.YTDLP_PATH || "yt-dlp";
-    const res = await new Promise<boolean>((resolve) => {
-      const proc = spawn(bin, ["--version"], {
-        windowsHide: true,
-        stdio: "ignore",
+
+  const candidates = [
+    env.YTDLP_PATH,
+    "yt-dlp",
+    "/usr/local/bin/yt-dlp",
+    "/usr/bin/yt-dlp",
+  ].filter(Boolean);
+
+  for (const bin of candidates) {
+    try {
+      const res = await new Promise<boolean>((resolve) => {
+        const proc = spawn(bin, ["--version"], {
+          windowsHide: true,
+          stdio: "ignore",
+        });
+        const timer = setTimeout(() => {
+          try {
+            proc.kill("SIGKILL");
+          } catch {
+            // ignore
+          }
+          resolve(false);
+        }, 3000);
+        proc.on("error", () => {
+          clearTimeout(timer);
+          resolve(false);
+        });
+        proc.on("close", (code) => {
+          clearTimeout(timer);
+          resolve(code === 0);
+        });
       });
-      const timer = setTimeout(() => {
-        proc.kill("SIGKILL");
-        resolve(false);
-      }, 3000);
-      proc.on("error", () => {
-        clearTimeout(timer);
-        resolve(false);
-      });
-      proc.on("close", (code) => {
-        clearTimeout(timer);
-        resolve(code === 0);
-      });
-    });
-    ytdlpAvailable = res;
-    ytdlpChecked = true;
-    return res;
-  } catch {
-    ytdlpAvailable = false;
-    ytdlpChecked = true;
-    return false;
+
+      if (res) {
+        env.YTDLP_PATH = bin;
+        ytdlpAvailable = true;
+        ytdlpChecked = true;
+        return true;
+      }
+    } catch {
+      // try next candidate
+    }
   }
+
+  ytdlpAvailable = false;
+  ytdlpChecked = true;
+  return false;
 }
 
 // ---------------------------------------------------------------------------
